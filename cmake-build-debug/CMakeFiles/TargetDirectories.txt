@@ -1,0 +1,3 @@
+/Users/emilycullen/Desktop/clion/driving-game/cmake-build-debug/CMakeFiles/SDL2_Basic_Setup.dir
+/Users/emilycullen/Desktop/clion/driving-game/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/emilycullen/Desktop/clion/driving-game/cmake-build-debug/CMakeFiles/rebuild_cache.dir

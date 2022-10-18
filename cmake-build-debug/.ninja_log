@@ -1,0 +1,14 @@
+# ninja log v5
+10	5164	1666111925520249005	CMakeFiles/SDL2_Basic_Setup.dir/src/main.cpp.o	ce02ab4cc6d13b36
+7293	7695	1666111928070389754	bin/SDL2_Basic_Setup	39790d9fba789649
+13	2623	1666111854860636536	CMakeFiles/SDL2_Basic_Setup.dir/src/Utils.cpp.o	7c187dc824cb7b1e
+11	5467	1666111925822432460	CMakeFiles/SDL2_Basic_Setup.dir/src/Game.cpp.o	1e60eef21d239099
+13	5681	1666111926037397654	CMakeFiles/SDL2_Basic_Setup.dir/src/Scene.cpp.o	16391d87a2974fd
+1	252	1666112189102795061	build.ninja	2bd3dd866ce37102
+5165	7293	1666111927654730676	CMakeFiles/SDL2_Basic_Setup.dir/src/Player.cpp.o	5da72f1213d3539e
+13	7302	1666112204128333907	CMakeFiles/SDL2_Basic_Setup.dir/src/main.cpp.o	eb45dd13e56a09c4
+15	7521	1666112204342531597	CMakeFiles/SDL2_Basic_Setup.dir/src/Game.cpp.o	8d4d38a4fd581f31
+17	8193	1666112205020009983	CMakeFiles/SDL2_Basic_Setup.dir/src/Scene.cpp.o	e75388dfff28a805
+7522	9570	1666112206404088522	CMakeFiles/SDL2_Basic_Setup.dir/src/Utils.cpp.o	5d07c0f1530c6e09
+7303	9787	1666112206626048546	CMakeFiles/SDL2_Basic_Setup.dir/src/Player.cpp.o	4248644dcf98be2b
+9788	10138	1666112206982282106	bin/SDL2_Basic_Setup	39790d9fba789649
