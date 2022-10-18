@@ -185,8 +185,6 @@ int Scene::FindCurrentBoxFromCoord(int x, int y)
     int boxId = boxesByMidpoint.at(midpoint);
     printf("MOUSE CLICKED ON BOX: %i \n", boxId);
     return boxId;
-
-
 }
 
 scene_box* Scene::GetBoxById(int id)
@@ -424,5 +422,18 @@ void Scene::NonWalkableBoxes(std::vector<int> boxIds)
             boxes.at(id)->walkable_status = walkable::NOT_WALKABLE;
         }
     }
+}
+
+bool Scene::IsBoxWalkable(int xCoord, int yCoord)
+{
+    int boxId = FindCurrentBoxFromCoord(xCoord, yCoord);
+    if (boxes.contains(boxId))
+    {
+        if (boxes.at(boxId)->walkable_status == walkable::WALKABLE)
+        {
+            return true;
+        }
+    }
+    return false;
 }
 

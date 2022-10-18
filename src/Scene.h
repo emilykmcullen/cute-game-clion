@@ -99,6 +99,8 @@ public:
 
     void CreatePathIdList(TreeNode* destination);
 
+    bool IsBoxWalkable(int xCoord, int yCoord);
+
 
 
 };

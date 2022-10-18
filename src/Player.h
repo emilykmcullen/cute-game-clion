@@ -1,9 +1,4 @@
-//
-// Created by Emily Cullen on 18/10/2022.
-//
-
-#ifndef SDL2_BASIC_SETUP_PLAYER_H
-#define SDL2_BASIC_SETUP_PLAYER_H
+#pragma once
 
 #include "Scene.h"
 #include "Utils.h"
@@ -39,5 +34,3 @@ public:
 
     void UpdateMovement(float deltaTime);
 };
-
-#endif //SDL2_BASIC_SETUP_PLAYER_H

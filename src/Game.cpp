@@ -155,37 +155,15 @@ void Game::ProcessInput(){
         }
         case SDL_MOUSEBUTTONDOWN:
         {
-            int destBoxId = my_scene->FindCurrentBoxFromCoord(event.button.x, event.button.y);
-            // Find path between player's current box and dest box
-            // Set path on player
-            // Set first destination coords by looking up box by id
-            // FindPath returns the end node, need to go up by parent and convert to a list of some sort.
-            my_player.m_pathByBoxId.clear();
-            int currentPlayerBox = my_scene->FindCurrentBoxFromCoord(my_player.m_position.x, my_player.m_position.y);
+            // If mouse is clicked we want to determine if it's an interaction or a movement
+            // FOR NOW:
+            // If it's on a walkable box then it's a movement, that's all
+
+            mouseClicked = true;
+            clickX = event.button.x;
+            clickY = event.button.y;
 
 
-            my_scene->FindPath(currentPlayerBox, destBoxId);
-            my_player.m_pathByBoxId = my_scene->pathIds;
-            // std::cout << "PATH: " << std::endl;
-            // for (int i = 0; i < my_player.m_pathByBoxId.size(); i++)
-            // {
-            //     std::cout << my_player.m_pathByBoxId.at(i) << std::endl;
-            // }
-            my_player.m_playerReachedFinalDestination = false;
-            int length = my_player.m_pathByBoxId.size();
-            std::cout << "LGENTH OF my_player.m_pathByBoxId: " << length << std::endl;
-            std::cout << "LGENTH OF my_scene.m_pathByBoxId: " << my_scene->pathIds.size() << std::endl;
-            // std::cout << "PATH: " << std::endl;
-            if (length > 0)
-            {
-                scene_box* firstbox = my_scene->GetBoxById(my_player.m_pathByBoxId.at(length-1));
-                //std::cout << "First box: " << my_player.m_pathByBoxId.at(length-1) << std::endl;
-                my_player.m_destination = { firstbox->originX, firstbox->originY};
-            }
-            else
-            {
-                my_player.m_playerReachedFinalDestination = true;
-            }
 
 
         }
@@ -212,6 +190,18 @@ void Game::Update(){
     deltaTime = (deltaTime > 0.05f) ? 0.05f : deltaTime;
 
 
+    // Have we clicked the mouse this loop?
+    if (mouseClicked)
+    {
+        // Was the mouse clicked on a walkable box?
+        bool walkable = my_scene->IsBoxWalkable(clickX, clickY);
+        if (walkable)
+        {
+            MovePlayer();
+        }
+        mouseClicked = false;
+    }
+
     //IF PLAYER HASN'T REACHED DESTINATION box,MOVE THE PLAYER TOWARD DESTINATION,
     //if they reach the desination box
     // look up the next node in the player path (until the node has empty children)
@@ -227,6 +217,33 @@ void Game::Update(){
 
     //Sets the new ticks for the current frame to be used in the next pass
     ticksLastFrame = SDL_GetTicks();
+
+}
+
+void Game::MovePlayer()
+{
+    int destBoxId = my_scene->FindCurrentBoxFromCoord(event.button.x, event.button.y);
+
+    my_player.m_pathByBoxId.clear();
+    int currentPlayerBox = my_scene->FindCurrentBoxFromCoord(my_player.m_position.x, my_player.m_position.y);
+
+
+    my_scene->FindPath(currentPlayerBox, destBoxId);
+    my_player.m_pathByBoxId = my_scene->pathIds;
+
+    my_player.m_playerReachedFinalDestination = false;
+    int length = my_player.m_pathByBoxId.size();
+
+    if (length > 0)
+    {
+        scene_box* firstbox = my_scene->GetBoxById(my_player.m_pathByBoxId.at(length-1));
+        //std::cout << "First box: " << my_player.m_pathByBoxId.at(length-1) << std::endl;
+        my_player.m_destination = { firstbox->originX, firstbox->originY};
+    }
+    else
+    {
+        my_player.m_playerReachedFinalDestination = true;
+    }
 
 }
 

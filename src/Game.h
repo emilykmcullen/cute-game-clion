@@ -11,11 +11,16 @@
 class Game {
 private:
     bool isRunning;
+    bool mouseClicked = false;
+    int clickX;
+    int clickY;
+
     SDL_Window *window;
     Scene* my_scene;
     Player my_player;
 
-    //for boxes
+
+    // Debug visualizations:
     // TO DO: tidy these up elsewhere
     uint32_t* color_buffer = NULL;
     SDL_Texture* color_buffer_texture = NULL;
@@ -23,6 +28,7 @@ private:
     void ClearColorBuffer(uint32_t color);
     void DrawRect(int x, int y, int width, int height, uint32_t color);
     void DrawSceneBoxes();
+    void MovePlayer();
     //
 
 public:
