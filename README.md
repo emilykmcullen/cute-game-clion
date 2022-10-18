@@ -70,4 +70,4 @@ When I'm back off holiday in around 10 days:
 
 ### :hedgehog: Day 7 (29th Sept) :hedgehog:
 * Started a little cleanup
-* Made a version of my project in CLion, I was using VSCode on my mac up til now but the intellisense wasn't good and it was getting too frustrating to navigate/refactor etc., will see how this goes
+* Made a version of my project in CLion, I was using VSCode on my mac up til now but the intellisense wasn't good and it was getting too frustrating to navigate/refactor etc., will see how this goes# cute-game-clion
