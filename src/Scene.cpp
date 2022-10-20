@@ -83,6 +83,16 @@ Scene::~Scene()
     DeletePath();
 }
 
+void Scene::Initialize(const char* spriteFile, SDL_Renderer* renderer)
+{
+    spriteComponent.Initialize(0,0, WINDOW_WIDTH, WINDOW_HEIGHT, spriteFile, renderer);
+}
+
+void Scene::Render(SDL_Renderer* renderer)
+{
+    spriteComponent.Render(renderer);
+}
+
 void Scene::PrintBoxInfo()
 {
     for (int i = 0; i < (BOXES_PER_ROW_AND_COLUMN*BOXES_PER_ROW_AND_COLUMN); i++)
@@ -200,28 +210,29 @@ scene_box* Scene::GetBoxById(int id)
     }
 }
 
-void Scene::FindPath(int startBoxId, int destinationBoxId)
+std::vector<int> Scene::FindPath(int startBoxId, int destinationBoxId)
 {
-
+    // Clear any previous path
+    pathIds.clear();
     // Handle invalid parameters
     if (startBoxId == destinationBoxId || !boxes.contains(startBoxId) || !boxes.contains(destinationBoxId))
     {
         std::cout << "Cannot create a path between these locations: " << startBoxId << " and " << destinationBoxId << std::endl;
-        return;
+        // Return empty pathIds list
+        return pathIds;
     }
 
     // Shouldn't need to do this, but just incase
     PathfindCleanup();
 
-    pathIds.clear();
-
     if (boxes.at(destinationBoxId)->walkable_status == walkable::NOT_WALKABLE)
     {
         std::cout << "Entered a non-walkable destination" << std::endl;
-        return;
+        // Return empty pathIds list
+        return pathIds;
     }
 
-    // ALL OKAY, GO AHEAD AND FIND PATH:x
+    // ALL OKAY, GO AHEAD AND FIND PATH:
 
     pathLinkedList = new Tree(startBoxId);
 
@@ -242,7 +253,7 @@ void Scene::FindPath(int startBoxId, int destinationBoxId)
             currentNode->children.push_back(newNode);
             CreatePathIdList(newNode);
             PathfindCleanup();
-            return;
+            return pathIds;
         }
     }
 
@@ -332,7 +343,7 @@ void Scene::FindPath(int startBoxId, int destinationBoxId)
                 {
                     CreatePathIdList(destination);
                     PathfindCleanup();
-                    return;
+                    return pathIds;
                 }
                 // Add it's child nodes to our second list of lists to search
                 nodeListsToSearch2.push_back(nodeKids);
@@ -350,6 +361,7 @@ void Scene::FindPath(int startBoxId, int destinationBoxId)
     }
     CreatePathIdList(destination);
     PathfindCleanup();
+    return pathIds;
 }
 
 void Scene::PathfindCleanup()

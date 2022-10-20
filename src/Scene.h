@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <vector>
 #include "Utils.h"
+#include "SpriteComponent.h"
 
 struct BoxDotProd
 {
@@ -58,6 +59,8 @@ private:
 
     Tree* pathLinkedList = nullptr;
 
+    SpriteComponent spriteComponent;
+
 
     // Find the boxes to the N/E/S/W of a particular box
     // Enter the originX and originY of the box
@@ -80,6 +83,9 @@ public:
     Scene(std::string name);
     ~Scene();
 
+    void Initialize(const char* spriteFile, SDL_Renderer* renderer);
+    void Render(SDL_Renderer* renderer);
+
     void PrintBoxInfo();
     void DrawBoxPoints();
     // TO DO: move back to private at some point
@@ -91,7 +97,7 @@ public:
     int FindCurrentBoxFromCoord(int x, int y);
 
     //move this elsewhere?
-    void FindPath(int startBoxId, int destinationBoxId);
+    std::vector<int> FindPath(int startBoxId, int destinationBoxId);
 
     void NonWalkableBoxes(std::vector<int> boxIds);
     void DeletePath(){ if (pathLinkedList != nullptr) pathLinkedList->DeleteTree();};

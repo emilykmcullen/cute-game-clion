@@ -50,8 +50,10 @@ void Game::Initialize(int width, int height) {
     color_buffer = (uint32_t*)malloc(sizeof(uint32_t) * WINDOW_WIDTH * WINDOW_HEIGHT);
     color_buffer_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, WINDOW_WIDTH, WINDOW_HEIGHT);
     my_scene = new Scene("emily sceene");
-    std::vector<int> nonwalkboxes = { 70, 71, 73, 74, 75, 76, 77, 79};
+    std::vector<int> nonwalkboxes = { 42,43,44, 70, 71, 73, 74, 75, 76, 77, 79};
     my_scene->NonWalkableBoxes(nonwalkboxes);
+    my_player.Initialize(0,0, "../../assets/spottydog.png", renderer); //path in relation to where i output the exe
+    my_scene->Initialize("../../assets/landscape.png", renderer);
     my_player.m_scene = my_scene;
 
     //my_scene->PrintBoxInfo();
@@ -95,32 +97,45 @@ void Game::DrawRect(int x, int y, int width, int height, uint32_t color) {
     }
 }
 
+void Game::DrawGrid(uint32_t color, int rectHeight, int rectWidth) {
+    for (int y = 0; y < WINDOW_HEIGHT; y++) {
+        if (y % rectHeight == 0) {
+            for (int x = 0; x < WINDOW_WIDTH; x++) {
+                color_buffer[(WINDOW_WIDTH * y) + x] = color;
+            }
+        } else {
+            for (int x = 0; x < WINDOW_WIDTH; x += rectWidth) {
+                color_buffer[(WINDOW_WIDTH * y) + x] = color;
+            }
+        }
+    }
+}
+
 void Game::DrawSceneBoxes()
 {
     uint32_t colour = 0x0000FF00;
-    for (int i = 0; i < BOXES_PER_ROW_AND_COLUMN * BOXES_PER_ROW_AND_COLUMN; i++)
-    {
-        scene_box* box = my_scene->boxes.at(i);
-        DrawRect(box->originX, box->originY, BOX_WIDTH, BOX_HEIGHT, colour);
-        colour = (uint32_t) ((float)colour / 1.04f);
-    }
+//    for (int i = 0; i < BOXES_PER_ROW_AND_COLUMN * BOXES_PER_ROW_AND_COLUMN; i++)
+//    {
+//        scene_box* box = my_scene->boxes.at(i);
+//        DrawRect(box->originX, box->originY, BOX_WIDTH, BOX_HEIGHT, colour);
+//        colour = (uint32_t) ((float)colour / 1.04f);
+//    }
+
+    DrawGrid(colour, BOX_HEIGHT, BOX_WIDTH);
 
     //temporary for testing
-    uint32_t playerBox = 0x00FFFFFF;
-    DrawRect(my_player.m_position.x, my_player.m_position.y, BOX_WIDTH/5, BOX_HEIGHT/5, playerBox);
+    //uint32_t playerBox = 0x00FFFFFF;
+    //DrawRect(my_player.m_position.x, my_player.m_position.y, BOX_WIDTH/5, BOX_HEIGHT/5, playerBox);
 
     //colour obstacles, temporary for testing
-    for (int i = 0; i < BOXES_PER_ROW_AND_COLUMN * BOXES_PER_ROW_AND_COLUMN; i++)
-    {
-        scene_box* box = my_scene->GetBoxById(i);
-        if (box->walkable_status == walkable::NOT_WALKABLE)
-        {
-            uint32_t obstaclecolour = 0x00FF0000;
-            DrawRect(box->originX, box->originY, BOX_WIDTH, BOX_HEIGHT, obstaclecolour);
-        }
-
-
-    }
+//    for (int i = 0; i < BOXES_PER_ROW_AND_COLUMN * BOXES_PER_ROW_AND_COLUMN; i++)
+//    {
+//        scene_box* box = my_scene->GetBoxById(i);
+//        if (box->walkable_status == walkable::NOT_WALKABLE) {
+//            uint32_t obstaclecolour = 0x00FF0000;
+//            DrawRect(box->originX, box->originY, BOX_WIDTH, BOX_HEIGHT, obstaclecolour);
+//        }
+//    }
 
 }
 
@@ -189,6 +204,15 @@ void Game::Update(){
     //Clamp deltaTime to a maximum value
     deltaTime = (deltaTime > 0.05f) ? 0.05f : deltaTime;
 
+    //fps
+    float avgFPS = frameCount / (( SDL_GetTicks() - ticksLastFrame)/ 1000.f );
+    if (avgFPS < 50)
+    {
+        std::cout << "FPS: " << avgFPS << std::endl;
+    }
+
+    frameCount = 0;
+
 
     // Have we clicked the mouse this loop?
     if (mouseClicked)
@@ -197,7 +221,7 @@ void Game::Update(){
         bool walkable = my_scene->IsBoxWalkable(clickX, clickY);
         if (walkable)
         {
-            MovePlayer();
+            SetPlayerPath();
         }
         mouseClicked = false;
     }
@@ -220,25 +244,24 @@ void Game::Update(){
 
 }
 
-void Game::MovePlayer()
+void Game::SetPlayerPath()
 {
-    int destBoxId = my_scene->FindCurrentBoxFromCoord(event.button.x, event.button.y);
+    int destBoxId = my_scene->FindCurrentBoxFromCoord(clickX, clickY);
 
+    // Clear any previous path the player had
     my_player.m_pathByBoxId.clear();
+
     int currentPlayerBox = my_scene->FindCurrentBoxFromCoord(my_player.m_position.x, my_player.m_position.y);
 
-
-    my_scene->FindPath(currentPlayerBox, destBoxId);
-    my_player.m_pathByBoxId = my_scene->pathIds;
-
-    my_player.m_playerReachedFinalDestination = false;
+    // Find path between current box and destination box
+    my_player.m_pathByBoxId = my_scene->FindPath(currentPlayerBox, destBoxId);
     int length = my_player.m_pathByBoxId.size();
-
     if (length > 0)
     {
         scene_box* firstbox = my_scene->GetBoxById(my_player.m_pathByBoxId.at(length-1));
         //std::cout << "First box: " << my_player.m_pathByBoxId.at(length-1) << std::endl;
         my_player.m_destination = { firstbox->originX, firstbox->originY};
+        my_player.m_playerReachedFinalDestination = false;
     }
     else
     {
@@ -251,9 +274,13 @@ void Game::Render(){
     SDL_SetRenderDrawColor(renderer, 21, 21,21 , 255);
     SDL_RenderClear(renderer);
     //ClearColorBuffer(0xFFFFFF00);
-    DrawSceneBoxes();
-    RenderColorBuffer();
+
+    my_scene->Render(renderer);
+    my_player.Render(renderer);
+//    DrawSceneBoxes();
+//    RenderColorBuffer();
     SDL_RenderPresent(renderer);
+    ++frameCount;
 }
 
 

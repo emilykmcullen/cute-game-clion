@@ -27,11 +27,15 @@ private:
     void RenderColorBuffer();
     void ClearColorBuffer(uint32_t color);
     void DrawRect(int x, int y, int width, int height, uint32_t color);
+    void DrawGrid(uint32_t color, int rectHeight, int rectWidth);
     void DrawSceneBoxes();
-    void MovePlayer();
+    void SetPlayerPath();
     //
 
+    int frameCount = 0;
+
 public:
+    //TEMPORARY GAME CONSTRUCTOR
     Game();
     ~Game();
     int ticksLastFrame = 0;

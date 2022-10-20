@@ -1,8 +1,8 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-const unsigned int WINDOW_WIDTH = 800;
-const unsigned int WINDOW_HEIGHT = 600;
+const unsigned int WINDOW_WIDTH = 960;
+const unsigned int WINDOW_HEIGHT = 640;
 
 const unsigned int FPS = 60;
 const unsigned int FRAME_TARGET_TIME = 1000/FPS;
@@ -18,6 +18,9 @@ const float BOX_HEIGHT = WINDOW_HEIGHT / BOXES_PER_ROW_AND_COLUMN;
 // if window_height is a 4 digit number then this should be 10000, and so on
 const unsigned int BOX_MIDPOINT_MULTIPLIER = 1000;
 const unsigned int BOX_NEIGHBOURS = 4;
+
+const unsigned int PLAYER_SPRITE_HEIGHT = BOX_HEIGHT/2;
+const unsigned int PLAYER_SPRITE_WIDTH = BOX_WIDTH/2;
 
 
 

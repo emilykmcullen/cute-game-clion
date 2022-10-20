@@ -51,6 +51,17 @@ void Player::UpdateMovement(float deltaTime)
             MovePlayer(200, m_destination, deltaTime);
         }
 
+        //Move the position of the rectangle position where we render the sprite
+        spriteComponent.destinationRectangle.x = m_position.x;
+        spriteComponent.destinationRectangle.y = m_position.y;
+
     }
 }
+
+
+void Player::Render(SDL_Renderer* renderer)
+{
+    spriteComponent.Render(renderer);
+}
+
 
