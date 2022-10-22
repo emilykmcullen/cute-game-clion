@@ -8,7 +8,6 @@
 #include<vector>
 #include<string>
 #include <map>
-#include "EntityManager.h"
 #include "./Component.h"
 #include "./Constants.h"
 
@@ -31,6 +30,8 @@ public:
     void Destroy();
     bool IsActive() const;
     void ListAllComponents() const;
+
+    bool IsMoving = false;
 
     template<typename T>
     bool HasComponent() const{

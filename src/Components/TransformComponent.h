@@ -1,10 +1,6 @@
 #ifndef TRANSFORMCOMPONENT_H
 #define TRANSFORMCOMPONENT_H
 
-#include "../EntityManager.h"
-//#include "../../lib/glm/glm.hpp"
-#include <SDL.h>
-#include "../Game.h"
 #include "../Utils.h"
 
 class TransformComponent: public Component {
@@ -30,6 +26,15 @@ public:
     void Update(float deltaTime) override {
         position.x += velocity.x * deltaTime;
         position.y += velocity.y * deltaTime;
+
+        //TO DO: SORT OUT SOMETHING TO SORT THIS KINDA SITUATION!
+        if (owner->name == "player")
+        {
+            if (position.x > (WINDOW_WIDTH * 2) - PLAYER_SPRITE_WIDTH)
+            {
+                position.x = (WINDOW_WIDTH * 2) - PLAYER_SPRITE_WIDTH;
+            }
+        }
     }
 
     void Render() override {

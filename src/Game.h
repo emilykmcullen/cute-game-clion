@@ -4,20 +4,14 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
-#include "Scene.h"
-#include "Player.h"
 
+#include "AssetManager.h"
 
 class Game {
 private:
     bool isRunning;
-    bool mouseClicked = false;
-    int clickX;
-    int clickY;
 
     SDL_Window *window;
-    Scene* my_scene;
-    Player my_player;
 
 
     // Debug visualizations:
@@ -37,6 +31,8 @@ private:
 
     int frameCount = 0;
 
+    void LoadScene();
+
 
 
 public:
@@ -46,7 +42,9 @@ public:
     int ticksLastFrame = 0;
     bool IsRunning() const;
     static SDL_Renderer *renderer;
+    static AssetManager* assetManager;
     static SDL_Event event;
+    static SDL_Rect camera;
     void Initialize(int width, int height);
     void ProcessInput();
     void ProcessGameOver();
@@ -54,6 +52,7 @@ public:
     void Render();
     void Destroy();
     void Test();
+    void HandleCameraMovement();
 };
 
 

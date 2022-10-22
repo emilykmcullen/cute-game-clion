@@ -1,9 +1,23 @@
 #include <iostream>
 #include "./Constants.h"
 #include "./Game.h"
+#include "./Components/TransformComponent.h"
+#include "./Components/SpriteComponent.h"
+#include "./Components/KeyboardControlComponent.h"
+#include "./Entity.h"
+#include "./Component.h"
+#include "Map.h"
+
+
+
 
 SDL_Renderer* Game::renderer;
 SDL_Event Game::event;
+SDL_Rect Game::camera = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
+Entity* mainPlayer = NULL;
+EntityManager manager;
+AssetManager* Game::assetManager = new AssetManager(&manager);
+Map* gameMap;
 
 Game::Game(){
     this->isRunning =false;
@@ -49,36 +63,73 @@ void Game::Initialize(int width, int height) {
     //for boxes
     color_buffer = (uint32_t*)malloc(sizeof(uint32_t) * WINDOW_WIDTH * WINDOW_HEIGHT);
     color_buffer_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, WINDOW_WIDTH, WINDOW_HEIGHT);
-    my_scene = new Scene("emily sceene");
-    std::vector<int> nonwalkboxes = { 22,23,33, 57, 58, 67, 68, 77, 78};
-    my_scene->NonWalkableBoxes(nonwalkboxes);
-    my_player.Initialize(0,0, "../../assets/monster.png", renderer); //path in relation to where i output the exe
-    my_scene->Initialize("../../assets/landscape.png", renderer);
-    my_player.m_scene = my_scene;
+
 
     CreateDebugGridRects();
-    //my_scene->PrintBoxInfo();
-    //Test();
+
+    LoadScene();
+
+    std::cout << "PLAYER POS: " << mainPlayer->GetComponent<TransformComponent>()->position.x << std::endl;
+    std::cout << "PLAYER POS: " << mainPlayer->GetComponent<TransformComponent>()->position.y << std::endl;
 
     return;
 }
 
-// void Game::Test()
-// {
-//     TreeNode* currentNode = my_scene->FindPath(4, 11);
-//     if (currentNode != nullptr)
-//     {
-//         while(currentNode->parent != nullptr)
-//         {
-//             std::cout << currentNode->data << std::endl;
-//             currentNode = currentNode->parent;
-//         }
-//         std::cout << currentNode->data << std::endl;
-//     }
+void Game::LoadScene()
+{
 
-//     my_scene->DeletePath();
+    std::string assetId1 = "landscape-tex";
+    std::string assetFile1 = "../../assets/test-landscape.png";
+    assetManager->AddTexture(assetId1, assetFile1.c_str(), renderer);
 
-// }
+    std::string mapTextureId = "landscape-tex";
+    std::string mapFile = "../../assets/landscape.map";
+
+    gameMap = new Map(
+            mapTextureId,2,
+            32);
+
+    gameMap->LoadMap(
+            mapFile,
+            25,
+            20);
+
+    std::string assetId = "player-texture";
+    std::string assetFile = "../../assets/monsterspritesheet.png";
+    assetManager->AddTexture(assetId, assetFile.c_str(), renderer);
+
+    std::string entityName = "player";
+    LayerType entityLayerType = PLAYER_LAYER;
+
+    // Add new entity
+    auto& newEntity(manager.AddEntity(entityName, entityLayerType));
+
+    newEntity.AddComponent<TransformComponent>(100, 100, 0, 0, 96, 64, 1);
+
+    // Add sprite component
+    std::string textureId = "player-texture";
+    bool isAnimated = true;
+    if (isAnimated)
+    {
+        newEntity.AddComponent<SpriteComponent>(textureId, 2, 90, true, false);
+    }
+    else
+    {
+        newEntity.AddComponent<SpriteComponent>(textureId, false);
+    }
+
+    // Add input control component
+    std::string upKey = "w";
+    std::string leftKey ="a";
+    std::string downKey = "s";
+    std::string rightKey = "d";
+    std::string shootKey = "space";
+    newEntity.AddComponent<KeyboardControlComponent>(upKey, rightKey, downKey, leftKey, shootKey);
+
+    mainPlayer = manager.GetEntityByName("player");
+
+}
+
 
 //for boxes
 void Game::RenderColorBuffer()
@@ -96,25 +147,6 @@ void Game::DrawRect(int x, int y, int width, int height, uint32_t color) {
             color_buffer[(WINDOW_WIDTH * current_y) + current_x] = color;
         }
     }
-}
-
-void Game::DrawGrid(uint32_t color, int rectHeight, int rectWidth) {
-//    for (int y = 0; y < WINDOW_HEIGHT; y++) {
-//        if (y % rectHeight == 0) {
-//            for (int x = 0; x < WINDOW_WIDTH; x++) {
-//                color_buffer[(WINDOW_WIDTH * y) + x] = color;
-//            }
-//        } else {
-//            for (int x = 0; x < WINDOW_WIDTH; x += rectWidth) {
-//                color_buffer[(WINDOW_WIDTH * y) + x] = color;
-//            }
-//        }
-//    }
-
-    //Create array of rects
-
-    //How many rects are there?
-
 }
 
 void Game::CreateDebugGridRects()
@@ -150,51 +182,6 @@ void Game::CreateDebugGridRects()
     }
 }
 
-void Game::DrawSceneBoxes()
-{
-    uint32_t colour = 0x0000FF00;
-//    for (int i = 0; i < BOXES_PER_ROW_AND_COLUMN * BOXES_PER_ROW_AND_COLUMN; i++)
-//    {
-//        scene_box* box = my_scene->boxes.at(i);
-//        DrawRect(box->originX, box->originY, BOX_WIDTH, BOX_HEIGHT, colour);
-//        colour = (uint32_t) ((float)colour / 1.04f);
-//    }
-
-    DrawGrid(colour, BOX_HEIGHT, BOX_WIDTH);
-
-    //temporary for testing
-    //uint32_t playerBox = 0x00FFFFFF;
-    //DrawRect(my_player.m_position.x, my_player.m_position.y, BOX_WIDTH/5, BOX_HEIGHT/5, playerBox);
-
-    //colour obstacles, temporary for testing
-//    for (int i = 0; i < BOXES_PER_ROW_AND_COLUMN * BOXES_PER_ROW_AND_COLUMN; i++)
-//    {
-//        scene_box* box = my_scene->GetBoxById(i);
-//        if (box->walkable_status == walkable::NOT_WALKABLE) {
-//            uint32_t obstaclecolour = 0x00FF0000;
-//            DrawRect(box->originX, box->originY, BOX_WIDTH, BOX_HEIGHT, obstaclecolour);
-//        }
-//    }
-
-}
-
-void Game::ClearColorBuffer(uint32_t color)
-{
-    for (int i = 0; i < (WINDOW_WIDTH * WINDOW_HEIGHT); i++)
-    {
-        color_buffer[i] = color;
-    }
-
-    // for (int y = 0; y < window_height; y++)
-    // {
-    //     for (int x = 0; x < window_width; x++)
-    //     {
-    //         color_buffer[(window_width * y) + x] = color;
-    //     }
-    // }
-}
-
-
 void Game::ProcessInput(){
     SDL_PollEvent(&event);
     switch (event.type){
@@ -213,9 +200,9 @@ void Game::ProcessInput(){
             // FOR NOW:
             // If it's on a walkable box then it's a movement, that's all
 
-            mouseClicked = true;
-            clickX = event.button.x;
-            clickY = event.button.y;
+//            mouseClicked = true;
+//            clickX = event.button.x;
+//            clickY = event.button.y;
 
 
 
@@ -250,78 +237,50 @@ void Game::Update(){
         //std::cout << "FPS: " << avgFPS << std::endl;
     }
 
+    manager.Update(deltaTime);
+
+    HandleCameraMovement();
+
     frameCount = 0;
-
-
-    // Have we clicked the mouse this loop?
-    if (mouseClicked)
-    {
-        // Was the mouse clicked on a walkable box?
-        bool walkable = my_scene->IsBoxWalkable(clickX, clickY);
-        if (walkable)
-        {
-            SetPlayerPath();
-        }
-        mouseClicked = false;
-    }
-
-    //IF PLAYER HASN'T REACHED DESTINATION box,MOVE THE PLAYER TOWARD DESTINATION,
-    //if they reach the desination box
-    // look up the next node in the player path (until the node has empty children)
-    // look up the next desination box by id
-    // set the player destination coords as that boxes origins
-    // move player to those coords
-    // when we reached end of path update player has reachedfinaldest to true;
-    my_player.UpdateMovement(deltaTime);
-
-
-
-
-
     //Sets the new ticks for the current frame to be used in the next pass
     ticksLastFrame = SDL_GetTicks();
-
-}
-
-void Game::SetPlayerPath()
-{
-    int destBoxId = my_scene->FindCurrentBoxFromCoord(clickX, clickY);
-
-    // Clear any previous path the player had
-    my_player.m_pathByBoxId.clear();
-
-    int currentPlayerBox = my_scene->FindCurrentBoxFromCoord(my_player.m_position.x, my_player.m_position.y);
-
-    // Find path between current box and destination box
-    my_player.m_pathByBoxId = my_scene->FindPath(currentPlayerBox, destBoxId);
-    int length = my_player.m_pathByBoxId.size();
-    if (length > 0)
-    {
-        scene_box* firstbox = my_scene->GetBoxById(my_player.m_pathByBoxId.at(length-1));
-        //std::cout << "First box: " << my_player.m_pathByBoxId.at(length-1) << std::endl;
-        my_player.m_destination = { firstbox->originX, firstbox->originY};
-        my_player.m_playerReachedFinalDestination = false;
-    }
-    else
-    {
-        my_player.m_playerReachedFinalDestination = true;
-    }
+    std::cout << "PLAYER POS: " << mainPlayer->GetComponent<TransformComponent>()->position.x << std::endl;
+    std::cout << "PLAYER POS: " << mainPlayer->GetComponent<TransformComponent>()->position.y << std::endl;
 
 }
 
 void Game::Render(){
     SDL_SetRenderDrawColor(renderer, 21, 21,21 , 255);
     SDL_RenderClear(renderer);
-    //ClearColorBuffer(0xFFFFFF00);
-
-    my_scene->Render(renderer);
-    my_player.Render(renderer);
 
     SDL_RenderDrawRects(renderer, rects, BOXES_PER_ROW_AND_COLUMN*BOXES_PER_ROW_AND_COLUMN);
+
+    //if(manager.HasNoEntities()){
+        //return;
+    //}
+    manager.Render();
 
 //    RenderColorBuffer();
     SDL_RenderPresent(renderer);
     ++frameCount;
+}
+
+void Game::HandleCameraMovement() {
+    // camera depends on player position
+    // if it's less than 0 on x/y it gets clamped back to 0
+    // if it's more than the camera width/height then it gets clamped to width/height
+
+    if (mainPlayer) {
+        TransformComponent* mainPlayerTransform = mainPlayer->GetComponent<TransformComponent>();
+        camera.x = mainPlayerTransform->position.x - (WINDOW_WIDTH / 2);
+        //as soon as player reaches half of the window, only then the camera follows
+        camera.y = mainPlayerTransform->position.y - (WINDOW_HEIGHT / 2);
+        //clamping camera values so doesnt go offscreen
+        camera.x = camera.x < 0 ? 0 : camera.x;
+        camera.y = camera.y < 0 ? 0 : camera.y;
+        camera.x = camera.x > camera.w ? camera.w : camera.x;
+        camera.y = camera.y > camera.h ? camera.h : camera.y;
+    }
 }
 
 
