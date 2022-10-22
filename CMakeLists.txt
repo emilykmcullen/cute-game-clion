@@ -17,7 +17,7 @@ project(SDL2_Basic_Setup)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMAKE")
-set(SOURCE_FILES    src/main.cpp src/Game.cpp src/Scene.cpp src/Player.cpp src/Utils.cpp)
+set(SOURCE_FILES    src/main.cpp src/Game.cpp src/Scene.cpp src/Player.cpp src/Utils.cpp src/Entity.cpp src/EntityManager.h src/EntityManager.cpp src/TextureManager.cpp src/TextureManager.h)
 
 Message("")
 Message( STATUS "SOURCE entry point : " ${SOURCE_FILES} )

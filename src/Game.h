@@ -29,10 +29,15 @@ private:
     void DrawRect(int x, int y, int width, int height, uint32_t color);
     void DrawGrid(uint32_t color, int rectHeight, int rectWidth);
     void DrawSceneBoxes();
-    void SetPlayerPath();
+    void CreateDebugGridRects();
+    SDL_Rect* rects = nullptr;
     //
 
+    void SetPlayerPath();
+
     int frameCount = 0;
+
+
 
 public:
     //TEMPORARY GAME CONSTRUCTOR

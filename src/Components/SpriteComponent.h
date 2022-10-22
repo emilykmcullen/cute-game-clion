@@ -7,7 +7,7 @@
 
 #include "SDL.h"
 #include "SDL_image.h"
-#include "Constants.h"
+#include "../Constants.h"
 #include <string>
 
 // DECIDED TO DO THIS LATER, FOR NOW I JUST WANT TO GET A PLAYER SPRITE RENDERING IN V SIMPLE WAY
@@ -48,4 +48,4 @@ public:
 };
 
 
-#endif //SDL2_BASIC_SETUP_SPRITECOMPONENT_H
+#endif

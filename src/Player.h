@@ -4,8 +4,8 @@
 #include "Utils.h"
 #include "SDL.h"
 #include <string>
+#include "./Components/SpriteComponent.h"
 
-#include "SpriteComponent.h"
 
 // TO DO: SORT ALL THIS OUT, IT'S ONLY TEMPORARY TO VISUALIZE MY PATHFINDING
 // REMEMEBER TO ADD SETTING CHECKS FOR DESTINATION ETC TO CHECK IT'S ACTAULLY A VALID DEST ETC ETC.

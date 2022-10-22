@@ -19,9 +19,16 @@ const float BOX_HEIGHT = WINDOW_HEIGHT / BOXES_PER_ROW_AND_COLUMN;
 const unsigned int BOX_MIDPOINT_MULTIPLIER = 1000;
 const unsigned int BOX_NEIGHBOURS = 4;
 
-const unsigned int PLAYER_SPRITE_HEIGHT = BOX_HEIGHT/2;
-const unsigned int PLAYER_SPRITE_WIDTH = BOX_WIDTH/2;
+const unsigned int PLAYER_SPRITE_HEIGHT = BOX_HEIGHT;
+const unsigned int PLAYER_SPRITE_WIDTH = BOX_WIDTH;
 
+enum LayerType {
+    TILEMAP_LAYER = 0,
+    OBSTACLE_LAYER = 1,
+    PLAYER_LAYER = 2
+};
+
+const unsigned int NUM_LAYERS = 3;
 
 
 #endif

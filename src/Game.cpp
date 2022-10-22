@@ -50,12 +50,13 @@ void Game::Initialize(int width, int height) {
     color_buffer = (uint32_t*)malloc(sizeof(uint32_t) * WINDOW_WIDTH * WINDOW_HEIGHT);
     color_buffer_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, WINDOW_WIDTH, WINDOW_HEIGHT);
     my_scene = new Scene("emily sceene");
-    std::vector<int> nonwalkboxes = { 42,43,44, 70, 71, 73, 74, 75, 76, 77, 79};
+    std::vector<int> nonwalkboxes = { 22,23,33, 57, 58, 67, 68, 77, 78};
     my_scene->NonWalkableBoxes(nonwalkboxes);
-    my_player.Initialize(0,0, "../../assets/spottydog.png", renderer); //path in relation to where i output the exe
+    my_player.Initialize(0,0, "../../assets/monster.png", renderer); //path in relation to where i output the exe
     my_scene->Initialize("../../assets/landscape.png", renderer);
     my_player.m_scene = my_scene;
 
+    CreateDebugGridRects();
     //my_scene->PrintBoxInfo();
     //Test();
 
@@ -98,16 +99,54 @@ void Game::DrawRect(int x, int y, int width, int height, uint32_t color) {
 }
 
 void Game::DrawGrid(uint32_t color, int rectHeight, int rectWidth) {
-    for (int y = 0; y < WINDOW_HEIGHT; y++) {
-        if (y % rectHeight == 0) {
-            for (int x = 0; x < WINDOW_WIDTH; x++) {
-                color_buffer[(WINDOW_WIDTH * y) + x] = color;
-            }
-        } else {
-            for (int x = 0; x < WINDOW_WIDTH; x += rectWidth) {
-                color_buffer[(WINDOW_WIDTH * y) + x] = color;
-            }
+//    for (int y = 0; y < WINDOW_HEIGHT; y++) {
+//        if (y % rectHeight == 0) {
+//            for (int x = 0; x < WINDOW_WIDTH; x++) {
+//                color_buffer[(WINDOW_WIDTH * y) + x] = color;
+//            }
+//        } else {
+//            for (int x = 0; x < WINDOW_WIDTH; x += rectWidth) {
+//                color_buffer[(WINDOW_WIDTH * y) + x] = color;
+//            }
+//        }
+//    }
+
+    //Create array of rects
+
+    //How many rects are there?
+
+}
+
+void Game::CreateDebugGridRects()
+{
+    int rectCount = BOXES_PER_ROW_AND_COLUMN * BOXES_PER_ROW_AND_COLUMN;
+    int x = 0;
+    int y = 0;
+
+    int test = sizeof(SDL_Rect) * rectCount;
+    rects = (SDL_Rect*)malloc(test);
+    for (int i = 0; i < rectCount; i++)
+    {
+
+        SDL_Rect rect = {x, y, 0, 0};
+        rect.w = BOX_WIDTH;
+        rect.h = BOX_HEIGHT;
+        rects[i] = rect;
+
+        // *rects = rect
+        // rects++;
+
+        //adds 12
+        if (x < WINDOW_WIDTH - BOX_WIDTH)
+        {
+            x += BOX_WIDTH;
         }
+        else
+        {
+            x = 0;
+            y += BOX_HEIGHT;
+        }
+        std::cout << "X: " << x << ", Y: " << y << std::endl;
     }
 }
 
@@ -208,7 +247,7 @@ void Game::Update(){
     float avgFPS = frameCount / (( SDL_GetTicks() - ticksLastFrame)/ 1000.f );
     if (avgFPS < 50)
     {
-        std::cout << "FPS: " << avgFPS << std::endl;
+        //std::cout << "FPS: " << avgFPS << std::endl;
     }
 
     frameCount = 0;
@@ -277,7 +316,9 @@ void Game::Render(){
 
     my_scene->Render(renderer);
     my_player.Render(renderer);
-//    DrawSceneBoxes();
+
+    SDL_RenderDrawRects(renderer, rects, BOXES_PER_ROW_AND_COLUMN*BOXES_PER_ROW_AND_COLUMN);
+
 //    RenderColorBuffer();
     SDL_RenderPresent(renderer);
     ++frameCount;

@@ -5,7 +5,7 @@
 #include <cstdio>
 #include <vector>
 #include "Utils.h"
-#include "SpriteComponent.h"
+#include "./Components/SpriteComponent.h"
 
 struct BoxDotProd
 {
