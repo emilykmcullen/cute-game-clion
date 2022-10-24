@@ -14,15 +14,15 @@ project(SDL2_Basic_Setup)
 # ------- Set Vars ------- #
 
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMAKE")
 
 #set(COMPONENT_HEADERS src/Components/SpriteComponent.h src/Components/TransformComponent.h)
 #include_directories(src/Components)
-#set(COMPONENT_HEADERS src/Components/)
 
-set(SOURCE_FILES src/main.cpp src/Game.cpp src/Scene.cpp src/Player.cpp src/Utils.cpp src/Entity.cpp src/EntityManager.cpp src/TextureManager.cpp src/TextureManager.h src/Animation.cpp src/AssetManager.cpp src/Map.cpp src/Map.h)
+
+set(SOURCE_FILES src/main.cpp src/Game.cpp src/Scene.cpp src/Player.cpp src/Utils.cpp src/Entity.cpp src/EntityManager.cpp src/TextureManager.cpp src/Animation.cpp src/AssetManager.cpp src/Map.cpp lua/sol.hpp)
 
 Message("")
 Message( STATUS "SOURCE entry point : " ${SOURCE_FILES} )
@@ -32,8 +32,16 @@ Message("")
 
 # ------- Executable ----- #
 
-ADD_EXECUTABLE(SDL2_Basic_Setup ${SOURCE_FILES})
-target_include_directories(SDL2_Basic_Setup PUBLIC "src/Components")
+file(GLOB LUA_SRC
+        "lua/src/*.c"
+        )
+
+list(FILTER LUA_SRC EXCLUDE REGEX ".*lua\\.c$")
+list(FILTER LUA_SRC EXCLUDE REGEX ".*luac\\.c$")
+
+ADD_EXECUTABLE(SDL2_Basic_Setup ${SOURCE_FILES} ${LUA_SRC})
+target_include_directories(SDL2_Basic_Setup PUBLIC "src/Components" )
+
 
 # ------- End Executable - #
 
@@ -87,8 +95,8 @@ file(COPY resources DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
 # ------- Inc & Link ---- #
 
-INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIR} ${SDL2TTF_INCLUDE_DIR} ${SDL2_IMAGE_INCLUDE_DIR} ${SDL2Mixer_INCLUDE_DIR})
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${SDL2_LIBRARY} ${SDL2TTF_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${SDL2Mixer_LIBRARY} )
+INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIR} ${SDL2TTF_INCLUDE_DIR} ${SDL2_IMAGE_INCLUDE_DIR} ${SDL2Mixer_INCLUDE_DIR} lua/src/)
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${SDL2_LIBRARY} ${SDL2TTF_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${SDL2Mixer_LIBRARY})
 
 # ------- End ----------- #
 

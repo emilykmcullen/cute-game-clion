@@ -13,6 +13,10 @@ public:
     std::string rightKey;
     std::string leftKey;
     std::string shootKey;
+    bool upKeyPressed = false;
+    bool downKeyPressed = false;
+    bool rightKeyPressed = false;
+    bool leftKeyPressed = false;
     TransformComponent *transform;
     SpriteComponent *sprite;
 
@@ -44,28 +48,19 @@ public:
 
     void Update(float deltaTime) override {
         if(Game::event.type == SDL_KEYDOWN){
-            owner->IsMoving = true;
             std::string keyCode = std::to_string(Game::event.key.keysym.sym);
 
             if (keyCode.compare(upKey)==0){
-                transform->velocity.y = -100;
-                transform->velocity.x = 0;
-                sprite->Play("UpAnimation");
+                upKeyPressed = true;
             }
             if (keyCode.compare(rightKey)==0){
-                transform->velocity.y = 0;
-                transform->velocity.x = 100;
-                sprite->Play("RightAnimation");
+                rightKeyPressed = true;
             }
             if (keyCode.compare(downKey)==0){
-                transform->velocity.y = 100;
-                transform->velocity.x = 0;
-                sprite->Play("DownAnimation");
+                downKeyPressed = true;
             }
             if (keyCode.compare(leftKey)==0){
-                transform->velocity.y = 0;
-                transform->velocity.x = -100;
-                sprite->Play("LeftAnimation");
+                leftKeyPressed = true;
             }
             if (keyCode.compare(shootKey)==0){
                 // to do
@@ -74,21 +69,88 @@ public:
         if (Game::event.type == SDL_KEYUP){
             std::string keyCode = std::to_string(Game::event.key.keysym.sym);
 
-            owner->IsMoving = false;
-
             if (keyCode.compare(upKey)==0){
+                upKeyPressed = false;
                 transform->velocity.y = 0;
             }
             if (keyCode.compare(rightKey)==0){
+                rightKeyPressed = false;
                 transform->velocity.x=0;
             }
             if (keyCode.compare(downKey)==0){
+                downKeyPressed = false;
                 transform->velocity.y=0;
             }
             if (keyCode.compare(leftKey)==0){
+                leftKeyPressed = false;
                 transform->velocity.x=0;
             }
 
+        }
+
+        if (upKeyPressed || downKeyPressed || rightKeyPressed || leftKeyPressed)
+        {
+            owner->IsMoving = true;
+        }
+        else
+        {
+            owner->IsMoving = false;
+        }
+        SetMovement();
+    }
+
+    void SetMovement()
+    {
+        if (upKeyPressed)
+        {
+            transform->velocity.y = -200;
+        }
+        if (rightKeyPressed)
+        {
+            transform->velocity.x = 200;
+        }
+        if (downKeyPressed)
+        {
+            transform->velocity.y = 200;
+        }
+        if (leftKeyPressed)
+        {
+            transform->velocity.x = -200;
+        }
+
+        if (downKeyPressed && rightKeyPressed)
+        {
+            sprite->Play("RightAnimation");
+        }
+        else if(downKeyPressed && leftKeyPressed)
+        {
+            sprite->Play("LeftAnimation");
+        }
+        else if (downKeyPressed)
+        {
+            sprite->Play("DownAnimation");
+        }
+
+        else if  (upKeyPressed && rightKeyPressed)
+        {
+            sprite->Play("RightAnimation");
+        }
+        else if (upKeyPressed && leftKeyPressed)
+        {
+            sprite->Play("LeftAnimation");
+        }
+        else if (upKeyPressed)
+        {
+            sprite->Play("UpAnimation");
+        }
+
+        else if (rightKeyPressed)
+        {
+            sprite->Play("RightAnimation");
+        }
+        else if (leftKeyPressed)
+        {
+            sprite->Play("LeftAnimation");
         }
     }
 };

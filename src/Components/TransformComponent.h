@@ -23,17 +23,45 @@ public:
 
     }
 
-    void Update(float deltaTime) override {
-        position.x += velocity.x * deltaTime;
-        position.y += velocity.y * deltaTime;
+    void Update(float deltaTime) override
+    {
 
-        //TO DO: SORT OUT SOMETHING TO SORT THIS KINDA SITUATION!
         if (owner->name == "player")
         {
-            if (position.x > (WINDOW_WIDTH * 2) - PLAYER_SPRITE_WIDTH)
+            // Clamp to right edge of map
+            if ((position.x + (velocity.x * deltaTime)) > (WINDOW_WIDTH * 2) - (PLAYER_SPRITE_WIDTH * scale))
             {
-                position.x = (WINDOW_WIDTH * 2) - PLAYER_SPRITE_WIDTH;
+                position.x = (WINDOW_WIDTH * 2) - (PLAYER_SPRITE_WIDTH * scale);
             }
+            // Clamp to left edge
+            else if ((position.x + (velocity.x * deltaTime)) < 0)
+            {
+                position.x = 0;
+            }
+            else
+            {
+                position.x += velocity.x * deltaTime;
+            }
+
+            // Clamp to bottom of map
+            if ((position.y + (velocity.y * deltaTime)) > (WINDOW_HEIGHT * 2) - (PLAYER_SPRITE_HEIGHT * scale))
+            {
+                position.y = (WINDOW_HEIGHT* 2) - (PLAYER_SPRITE_HEIGHT * scale);
+            }
+            else if ((position.y + (velocity.y * deltaTime)) < 0)
+            {
+                position.y = 0;
+            }
+            else
+            {
+                position.y += velocity.y * deltaTime;
+            }
+
+        }
+        else
+        {
+            position.x += velocity.x * deltaTime;
+            position.y += velocity.y * deltaTime;
         }
     }
 

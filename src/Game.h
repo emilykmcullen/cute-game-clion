@@ -31,7 +31,7 @@ private:
 
     int frameCount = 0;
 
-    void LoadScene();
+    void LoadScene(int scenenum);
 
 
 

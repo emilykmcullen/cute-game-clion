@@ -7,6 +7,8 @@
 #include "./Entity.h"
 #include "./Component.h"
 #include "Map.h"
+#include "../lua/sol.hpp"
+
 
 
 
@@ -67,67 +69,139 @@ void Game::Initialize(int width, int height) {
 
     CreateDebugGridRects();
 
-    LoadScene();
+    LoadScene(1);
 
-    std::cout << "PLAYER POS: " << mainPlayer->GetComponent<TransformComponent>()->position.x << std::endl;
-    std::cout << "PLAYER POS: " << mainPlayer->GetComponent<TransformComponent>()->position.y << std::endl;
+    //std::cout << "PLAYER POS: " << mainPlayer->GetComponent<TransformComponent>()->position.x << std::endl;
+    //std::cout << "PLAYER POS: " << mainPlayer->GetComponent<TransformComponent>()->position.y << std::endl;
 
     return;
 }
 
-void Game::LoadScene()
+void Game::LoadScene(int scenenum)
 {
 
-    std::string assetId1 = "landscape-tex";
-    std::string assetFile1 = "../../assets/test-landscape.png";
-    assetManager->AddTexture(assetId1, assetFile1.c_str(), renderer);
+    sol::state lua;
+    lua.open_libraries(sol::lib::base, sol::lib::os, sol::lib::math);
+    //these libraries are now available to me
 
-    std::string mapTextureId = "landscape-tex";
-    std::string mapFile = "../../assets/landscape.map";
+    std::string levelName = "Scene" + std::to_string(scenenum);
+    lua.script_file("../../assets/scripts/" + levelName + ".lua");
+
+    /***************************************************/
+    /* LOAD ASSETS FROM LUA CONFIG FILE */
+    /***************************************************/
+
+    sol::table levelData = lua[levelName];
+    sol::table levelAssets = levelData["assets"];
+    //will make a table of all the data in the file
+
+    unsigned int assetIndex = 0;
+    while (true) {
+        sol::optional<sol::table> existsAssetIndexNode = levelAssets[assetIndex];
+        //while loop will run until index of assets doesnt exist
+        if (existsAssetIndexNode == sol::nullopt) {
+            break;
+        } else {
+            sol::table asset = levelAssets[assetIndex];
+            std::string assetType = asset["type"];
+            if ( assetType.compare("texture") == 0) {
+                std::string assetId = asset["id"];
+                std::string assetFile = asset["file"];
+                assetManager->AddTexture(assetId, assetFile.c_str(), renderer);
+            }
+        }
+        assetIndex++;
+    }
+
+    /***************************************************/
+    /* LOADS MAP FROM LUA CONFIG FILE */
+    /***************************************************/
+
+    sol::table levelMap = levelData["map"];
+    std::string mapTextureId = levelMap["textureAssetId"];
+    std::string mapFile = levelMap["file"];
+    std::cout << "MAPTEXID: " << mapTextureId << std::endl;
 
     gameMap = new Map(
-            mapTextureId,2,
-            32);
+            mapTextureId,
+            static_cast<int>(levelMap["scale"]),
+            static_cast<int>(levelMap["tileSize"])
+    );
 
     gameMap->LoadMap(
             mapFile,
-            25,
-            20);
+            static_cast<int>(levelMap["mapSizeX"]),
+            static_cast<int>(levelMap["mapSizeY"])
+    );
 
-    std::string assetId = "player-texture";
-    std::string assetFile = "../../assets/monsterspritesheet.png";
-    assetManager->AddTexture(assetId, assetFile.c_str(), renderer);
+    /***************************************************/
+    /* LOADS ENTITIES AND COMPONENTS FROM LUA CONFIG FILE */
+    /***************************************************/
 
-    std::string entityName = "player";
-    LayerType entityLayerType = PLAYER_LAYER;
+    sol::table levelEntities = levelData["entities"];
+    unsigned int entityIndex = 0;
+    while (true) {
+        sol::optional<sol::table> existsEntityIndexNode = levelEntities[entityIndex];
+        if (existsEntityIndexNode == sol::nullopt) {
+            break;
+        }
+        else {
+            sol::table entity = levelEntities[entityIndex];
+            std::string entityName = entity["name"];
+            LayerType entityLayerType = static_cast<LayerType>(static_cast<int>(entity["layer"]));
 
-    // Add new entity
-    auto& newEntity(manager.AddEntity(entityName, entityLayerType));
+            // Add new entity
+            auto& newEntity(manager.AddEntity(entityName, entityLayerType));
 
-    newEntity.AddComponent<TransformComponent>(100, 100, 0, 0, 96, 64, 1);
+            // Add Transform Component
+            sol::optional<sol::table> existsTransformComponent = entity["components"]["transform"];
+            if (existsTransformComponent != sol::nullopt) {
+                newEntity.AddComponent<TransformComponent>(
+                        static_cast<int>(entity["components"]["transform"]["position"]["x"]),
+                        static_cast<int>(entity["components"]["transform"]["position"]["y"]),
+                        static_cast<int>(entity["components"]["transform"]["velocity"]["x"]),
+                        static_cast<int>(entity["components"]["transform"]["velocity"]["y"]),
+                        static_cast<int>(entity["components"]["transform"]["width"]),
+                        static_cast<int>(entity["components"]["transform"]["height"]),
+                        static_cast<int>(entity["components"]["transform"]["scale"])
+                );
+            }
 
-    // Add sprite component
-    std::string textureId = "player-texture";
-    bool isAnimated = true;
-    if (isAnimated)
-    {
-        newEntity.AddComponent<SpriteComponent>(textureId, 2, 90, true, false);
+            // Add sprite component
+            sol::optional<sol::table> existsSpriteComponent = entity["components"]["sprite"];
+            if (existsSpriteComponent != sol::nullopt) {
+                std::string textureId = entity["components"]["sprite"]["textureAssetId"];
+                bool isAnimated = entity["components"]["sprite"]["animated"];
+                if (isAnimated) {
+                    newEntity.AddComponent<SpriteComponent>(
+                            textureId,
+                            static_cast<int>(entity["components"]["sprite"]["frameCount"]),
+                            static_cast<int>(entity["components"]["sprite"]["animationSpeed"]),
+                            static_cast<bool>(entity["components"]["sprite"]["hasDirections"]),
+                            static_cast<bool>(entity["components"]["sprite"]["fixed"])
+                    );
+                } else {
+                    newEntity.AddComponent<SpriteComponent>(textureId, false);
+                }
+            }
+
+            // Add input control component
+            sol::optional<sol::table> existsInputComponent = entity["components"]["input"];
+            if (existsInputComponent != sol::nullopt) {
+                sol::optional<sol::table> existsKeyboardInputComponent = entity["components"]["input"]["keyboard"];
+                if (existsKeyboardInputComponent != sol::nullopt) {
+                    std::string upKey = entity["components"]["input"]["keyboard"]["up"];
+                    std::string rightKey = entity["components"]["input"]["keyboard"]["right"];
+                    std::string downKey = entity["components"]["input"]["keyboard"]["down"];
+                    std::string leftKey = entity["components"]["input"]["keyboard"]["left"];
+                    std::string shootKey = entity["components"]["input"]["keyboard"]["shoot"];
+                    newEntity.AddComponent<KeyboardControlComponent>(upKey, rightKey, downKey, leftKey, shootKey);
+                }
+            }
+        }
+        entityIndex++;
     }
-    else
-    {
-        newEntity.AddComponent<SpriteComponent>(textureId, false);
-    }
-
-    // Add input control component
-    std::string upKey = "w";
-    std::string leftKey ="a";
-    std::string downKey = "s";
-    std::string rightKey = "d";
-    std::string shootKey = "space";
-    newEntity.AddComponent<KeyboardControlComponent>(upKey, rightKey, downKey, leftKey, shootKey);
-
     mainPlayer = manager.GetEntityByName("player");
-
 }
 
 
@@ -178,7 +252,7 @@ void Game::CreateDebugGridRects()
             x = 0;
             y += BOX_HEIGHT;
         }
-        std::cout << "X: " << x << ", Y: " << y << std::endl;
+        //std::cout << "X: " << x << ", Y: " << y << std::endl;
     }
 }
 
@@ -244,8 +318,8 @@ void Game::Update(){
     frameCount = 0;
     //Sets the new ticks for the current frame to be used in the next pass
     ticksLastFrame = SDL_GetTicks();
-    std::cout << "PLAYER POS: " << mainPlayer->GetComponent<TransformComponent>()->position.x << std::endl;
-    std::cout << "PLAYER POS: " << mainPlayer->GetComponent<TransformComponent>()->position.y << std::endl;
+    //std::cout << "PLAYER POS: " << mainPlayer->GetComponent<TransformComponent>()->position.x << std::endl;
+    //std::cout << "PLAYER POS: " << mainPlayer->GetComponent<TransformComponent>()->position.y << std::endl;
 
 }
 
