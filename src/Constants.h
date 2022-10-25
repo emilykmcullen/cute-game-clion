@@ -25,10 +25,18 @@ const unsigned int PLAYER_SPRITE_WIDTH = 96;
 enum LayerType {
     TILEMAP_LAYER = 0,
     OBSTACLE_LAYER = 1,
-    PLAYER_LAYER = 2
+    PLAYER_LAYER = 2,
+    NPC_LAYER = 3
 };
 
-const unsigned int NUM_LAYERS = 3;
+const unsigned int NUM_LAYERS = 4;
+
+enum CollisionType {
+    NO_COLLISION,
+    PLAYER_NPC_COLLISION,
+    PLAYER_VEGETATION_COLLISION,
+    PLAYER_LEVEL_COMPLETE_COLLISION
+};
 
 
 #endif

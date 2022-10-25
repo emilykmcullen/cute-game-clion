@@ -4,6 +4,7 @@
 #include "./Components/TransformComponent.h"
 #include "./Components/SpriteComponent.h"
 #include "./Components/KeyboardControlComponent.h"
+#include "./Components/ColliderComponent.h"
 #include "./Entity.h"
 #include "./Component.h"
 #include "Map.h"
@@ -198,6 +199,19 @@ void Game::LoadScene(int scenenum)
                     newEntity.AddComponent<KeyboardControlComponent>(upKey, rightKey, downKey, leftKey, shootKey);
                 }
             }
+
+            // Add collider component
+            sol::optional<sol::table> existsColliderComponent = entity["components"]["collider"];
+            if (existsColliderComponent != sol::nullopt) {
+                std::string colliderTag = entity["components"]["collider"]["tag"];
+                newEntity.AddComponent<ColliderComponent>(
+                        colliderTag,
+                        static_cast<int>(entity["components"]["transform"]["position"]["x"]),
+                        static_cast<int>(entity["components"]["transform"]["position"]["y"]),
+                        static_cast<int>(entity["components"]["transform"]["width"]),
+                        static_cast<int>(entity["components"]["transform"]["height"])
+                );
+            }
         }
         entityIndex++;
     }
@@ -312,6 +326,7 @@ void Game::Update(){
     }
 
     manager.Update(deltaTime);
+    CheckPlayerCollisions();
 
     HandleCameraMovement();
 
@@ -354,6 +369,14 @@ void Game::HandleCameraMovement() {
         camera.y = camera.y < 0 ? 0 : camera.y;
         camera.x = camera.x > camera.w ? camera.w : camera.x;
         camera.y = camera.y > camera.h ? camera.h : camera.y;
+    }
+}
+
+void Game::CheckPlayerCollisions()
+{
+    if (manager.CheckPlayerCollisions() == CollisionType::PLAYER_NPC_COLLISION)
+    {
+        std::cout << "OUCH!" << std::endl;
     }
 }
 

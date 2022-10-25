@@ -53,6 +53,7 @@ public:
     void Destroy();
     void Test();
     void HandleCameraMovement();
+    void CheckPlayerCollisions();
 };
 
 

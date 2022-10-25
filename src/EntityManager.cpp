@@ -1,5 +1,6 @@
 #include "./EntityManager.h"
 #include <iostream>
+#include "./Components/ColliderComponent.h"
 
 void EntityManager::ClearData(){
     for (auto& entity: entities){
@@ -84,4 +85,28 @@ std::vector<Entity*> EntityManager::GetEntitiesByLayer(LayerType layer) const {
 
 unsigned int EntityManager::GetEntityCount(){
     return entities.size();
+}
+
+CollisionType EntityManager::CheckPlayerCollisions() const {
+    Entity* thisEntity = GetEntityByName("player");
+    //check current entity has collider component
+    ColliderComponent* thisCollider = thisEntity->GetComponent<ColliderComponent>();
+    for (int j = 0; j < entities.size(); j++) {
+        //only check entities that are AFTER the current one (eg. 'to the right' of the current entity)
+        //do not need to check entities before current entity as this combination will have already been check
+        auto& thatEntity = entities[j];
+        if (thisEntity->name.compare(thatEntity->name) != 0 && thatEntity->HasComponent<ColliderComponent>()) {
+            ColliderComponent* thatCollider = thatEntity->GetComponent<ColliderComponent>();
+            if (Collision::CheckRectangleCollision(thisCollider->collider, thatCollider->collider)) {
+                vec2 position = thisEntity->GetComponent<TransformComponent>()->position;
+                if (thisCollider->colliderTag.compare("PLAYER") == 0 && thatCollider->colliderTag.compare("NPC") == 0) {
+                    return PLAYER_NPC_COLLISION;
+                }
+                if (thisCollider->colliderTag.compare("PLAYER") == 0 && thatCollider->colliderTag.compare("LEVEL_COMPLETE") == 0) {
+                    return PLAYER_LEVEL_COMPLETE_COLLISION;
+                }
+            }
+        }
+    }
+    return NO_COLLISION;
 }
