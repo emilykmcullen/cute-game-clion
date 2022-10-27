@@ -1,0 +1,38 @@
+WINDOW_WIDTH = 1280, WINDOW_HEIGHT = 640
+
+I allow the player to scroll to WINDOW_WIDTH*2 (2560) and WINDOW_HEIGHT*2 (1280)
+
+EXAMPLE 1
+---------
+If I have:
+scale = 1
+tileSize = 32
+
+to fill all my areas I would need a 80 x 40 map in my .map file and mapSizeX = 80, mapSizeY = 40
+This is because 32 * 80 = 2560 (the width I can scroll to) and 32 * 40 = 1280 (the height I can scroll to_
+
+EXAMPLE 2
+---------
+If I have:
+scale = 2
+tileSize = 32
+
+to fill all the areas I would need a 40 x 20 map in my .map file and mapSizeX= = 40, mapSizeY = 20
+This is because the tiles are now 32 * 2 = 64 (multiplied by the scale)
+and 2560/64 = 40 and 1280/64 = 20
+
+EXAMPLE 3
+---------
+If I have
+scale = 4
+tileSize = 32
+
+to fill all the areas I would need a 20 x 10 map in my .map file and mapSizeX= = 20, mapSizeY = 10
+This is because the tiles are now 32 * 4 = 128 (multiplied by the scale)
+and 2560/128 = 20 and 1280/128 = 10
+
+
+NOTES
+-----
+1. Remember to adjust mapsize accordingly when adjusting the scale of the tiles!! 
+
