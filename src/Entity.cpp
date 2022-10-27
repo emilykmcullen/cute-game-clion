@@ -6,6 +6,7 @@
 #include <iostream>
 #include "./Components/TransformComponent.h"
 #include "./Components/SpriteComponent.h"
+#include "./Components/ColliderComponent.h"
 
 
 Entity::Entity(EntityManager& manager): manager(manager) {
@@ -41,4 +42,15 @@ void Entity::Destroy(){
 
 bool Entity::IsActive() const {
     return this->isActive;
+}
+
+void Entity::CalculateColliderNextPosition(float deltaTime)
+{
+    if (HasComponent<ColliderComponent>() && HasComponent<TransformComponent>())
+    {
+        ColliderComponent* collider = GetComponent<ColliderComponent>();
+        TransformComponent* transform = GetComponent<TransformComponent>();
+
+        collider->nextPosCollider = transform->CalculateNextPosition(collider->nextPosCollider, deltaTime);
+    }
 }

@@ -326,7 +326,6 @@ void Game::Update(){
     }
 
     manager.Update(deltaTime);
-    CheckPlayerCollisions();
 
     HandleCameraMovement();
 
@@ -371,15 +370,6 @@ void Game::HandleCameraMovement() {
         camera.y = camera.y > camera.h ? camera.h : camera.y;
     }
 }
-
-void Game::CheckPlayerCollisions()
-{
-    if (manager.CheckPlayerCollisions() == CollisionType::PLAYER_NPC_COLLISION)
-    {
-        std::cout << "OUCH!" << std::endl;
-    }
-}
-
 
 void Game::ProcessGameOver() {
     std::cout << "Game Over" << std::endl;

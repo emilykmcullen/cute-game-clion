@@ -24,6 +24,9 @@ void Map::LoadMap(std::string filePath, int mapSizeX, int mapSizeY){
         for (int x = 0; x < mapSizeX; x++) {
             char ch;
             mapFile.get(ch);
+            //eg. if ch is '01' convert 1
+            // sourceRectY = 1 * tilesize (32)
+            // sourceRectY = 32
             int sourceRectY = atoi(&ch) * tileSize;
             mapFile.get(ch);
             int sourceRectX = atoi(&ch) * tileSize;

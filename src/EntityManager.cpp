@@ -14,6 +14,13 @@ bool EntityManager::HasNoEntities(){
 
 void EntityManager::Update(float deltaTime){
     for (auto& entity: entities){
+        entity->CalculateColliderNextPosition(deltaTime);
+    }
+
+    // if there is going to be a collision, do appropriate actions
+    CheckPlayerCollisions();
+
+    for (auto& entity: entities){
         entity->Update(deltaTime);
     }
     DestroyInactiveEntities();
@@ -97,9 +104,9 @@ CollisionType EntityManager::CheckPlayerCollisions() const {
         auto& thatEntity = entities[j];
         if (thisEntity->name.compare(thatEntity->name) != 0 && thatEntity->HasComponent<ColliderComponent>()) {
             ColliderComponent* thatCollider = thatEntity->GetComponent<ColliderComponent>();
-            if (Collision::CheckRectangleCollision(thisCollider->collider, thatCollider->collider)) {
-                vec2 position = thisEntity->GetComponent<TransformComponent>()->position;
+            if (Collision::CheckRectangleCollision(thisCollider->nextPosCollider, thatCollider->nextPosCollider)) {
                 if (thisCollider->colliderTag.compare("PLAYER") == 0 && thatCollider->colliderTag.compare("NPC") == 0) {
+                    thisEntity->resetPosition = true;
                     return PLAYER_NPC_COLLISION;
                 }
                 if (thisCollider->colliderTag.compare("PLAYER") == 0 && thatCollider->colliderTag.compare("LEVEL_COMPLETE") == 0) {

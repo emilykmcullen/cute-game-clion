@@ -42,7 +42,7 @@ public:
     int ticksLastFrame = 0;
     bool IsRunning() const;
     static SDL_Renderer *renderer;
-    static AssetManager* assetManager;
+    static AssetManager *assetManager;
     static SDL_Event event;
     static SDL_Rect camera;
     void Initialize(int width, int height);

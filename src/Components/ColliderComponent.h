@@ -11,12 +11,14 @@ public:
     SDL_Rect collider; //of the entity
     SDL_Rect sourceRectangle;
     SDL_Rect destinationRectangle;
-    TransformComponent* transform;
+    TransformComponent* transform = nullptr;
+    SDL_Rect nextPosCollider;
 
 
     ColliderComponent(std::string colliderTag, int x, int y, int width, int height) {
         this->colliderTag = colliderTag;
         this->collider = {x , y , width, height};
+        this->nextPosCollider = collider;
     }
 
     void Initialize() override {
@@ -25,6 +27,7 @@ public:
             transform = owner->GetComponent<TransformComponent>();
             sourceRectangle = {0, 0, transform->width, transform->height};
             destinationRectangle = {collider.x, collider.y, collider.w, collider.h};
+            this->nextPosCollider = collider;
         }
     }
 
@@ -35,6 +38,7 @@ public:
         collider.h = transform->height * transform->scale;
         destinationRectangle.x = collider.x - Game::camera.x;
         destinationRectangle.y = collider.y - Game::camera.y;
+        this->nextPosCollider = collider;
     }
 
 

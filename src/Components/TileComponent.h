@@ -1,7 +1,6 @@
 #ifndef TILECOMPONENT_H
 #define TILECOMPONENT_H
 #include <SDL.h>
-#include "../EntityManager.h"
 #include "../AssetManager.h"
 #include "../Utils.h"
 #include "../Game.h"
@@ -28,6 +27,7 @@ public:
 
         position.x = x;
         position.y = y;
+        std::cout << "Source rec.x: " << sourceRectangle.x << ", source rec.y: " << sourceRectangle.y << std::endl;
 
     }
 

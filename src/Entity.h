@@ -11,6 +11,7 @@
 #include "./Component.h"
 #include "./Constants.h"
 
+
 class Component;
 class EntityManager;
 
@@ -30,8 +31,11 @@ public:
     void Destroy();
     bool IsActive() const;
     void ListAllComponents() const;
+    void CalculateColliderNextPosition(float deltaTime);
 
     bool IsMoving = false;
+    // when there has been a collision
+    bool resetPosition = false;
 
     template<typename T>
     bool HasComponent() const{
