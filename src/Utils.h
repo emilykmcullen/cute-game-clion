@@ -20,6 +20,7 @@ typedef struct TreeNode
 } TreeNode;
 
 extern float NormalizedVecsDotProduct(vec2 vecA, vec2 vecB);
+extern void NormalizeVector(vec2& vector);
 
 class Tree
 {

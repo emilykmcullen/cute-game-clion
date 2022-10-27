@@ -5,6 +5,7 @@
 #include "./Components/SpriteComponent.h"
 #include "./Components/KeyboardControlComponent.h"
 #include "./Components/ColliderComponent.h"
+#include "./Components/MovementScheduleComponent.h"
 #include "./Entity.h"
 #include "./Component.h"
 #include "Map.h"
@@ -173,13 +174,15 @@ void Game::LoadScene(int scenenum)
             if (existsSpriteComponent != sol::nullopt) {
                 std::string textureId = entity["components"]["sprite"]["textureAssetId"];
                 bool isAnimated = entity["components"]["sprite"]["animated"];
+                bool isAnimatedWhileNotMoving = entity["components"]["sprite"]["animatedWhileNotMoving"];
                 if (isAnimated) {
                     newEntity.AddComponent<SpriteComponent>(
                             textureId,
                             static_cast<int>(entity["components"]["sprite"]["frameCount"]),
                             static_cast<int>(entity["components"]["sprite"]["animationSpeed"]),
                             static_cast<bool>(entity["components"]["sprite"]["hasDirections"]),
-                            static_cast<bool>(entity["components"]["sprite"]["fixed"])
+                            static_cast<bool>(entity["components"]["sprite"]["fixed"]),
+                            isAnimatedWhileNotMoving
                     );
                 } else {
                     newEntity.AddComponent<SpriteComponent>(textureId, false);
@@ -211,6 +214,34 @@ void Game::LoadScene(int scenenum)
                         static_cast<int>(entity["components"]["transform"]["width"]),
                         static_cast<int>(entity["components"]["transform"]["height"])
                 );
+            }
+
+            // Add MovementScheduleComponent
+            sol::optional<sol::table> existsMovementScheduleComponent = entity["components"]["movementschedule"];
+            if (existsMovementScheduleComponent != sol::nullopt) {
+
+
+                sol::table destinationVectors = entity["components"]["movementschedule"]["destinations"];
+                //will make a table of the destinations
+                std::vector<vec2> destinations;
+                unsigned int destinationsIndex = 0;
+                while (true) {
+                    sol::optional<sol::table> existsAssetIndexNode = destinationVectors[destinationsIndex];
+                    //while loop will run until index of destinations doesnt exist
+                    if (existsAssetIndexNode == sol::nullopt) {
+                        break;
+                    } else {
+                        sol::table destination = destinationVectors[destinationsIndex];
+                        float x = static_cast<float>(destination["x"]);
+                        float y = static_cast<float>(destination["y"]);
+                        vec2 vec = { x, y};
+                        destinations.push_back(vec);
+                    }
+                    destinationsIndex++;
+                }
+
+                int timeAtDestination = static_cast<int>(entity["components"]["movementschedule"]["timeAtDestination"]);
+                newEntity.AddComponent<MovementScheduleComponent>(destinations, timeAtDestination);
             }
         }
         entityIndex++;

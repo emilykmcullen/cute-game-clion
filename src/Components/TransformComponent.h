@@ -11,7 +11,6 @@ public:
     int width;
     int height;
     int scale;
-    vec2 prevPos;
 
     TransformComponent(float posX, float posY, float velX, float velY, int w, int h, int s){
         position = vec2{posX, posY};
@@ -19,7 +18,6 @@ public:
         width = w;
         height = h;
         scale = s;
-        prevPos = vec2{posX, posY};
     }
 
     void Initialize() override {
@@ -60,11 +58,9 @@ public:
 
     void Update(float deltaTime) override
     {
-
-//        if (owner->name == "player")
-//        {
-//            std::cout << "Player prev pos: " << prevPos.x << ", " << prevPos.y << std::endl;
-//        }
+        // Reset position is used for collisions,
+        // If we are going to collide with something we set reset position to true
+        // So that we avoid moving it this frame
         if (!owner->resetPosition)
         {
             // Clamp to right edge of map
@@ -95,9 +91,6 @@ public:
             {
                 position.y += velocity.y * deltaTime;
             }
-
-            //std::cout << "Player new pos: " << position.x << ", " << position.y << std::endl;
-
         }
         owner->resetPosition = false;
 

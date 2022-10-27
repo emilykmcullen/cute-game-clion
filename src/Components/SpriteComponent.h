@@ -15,6 +15,7 @@ private:
     SDL_Rect sourceRectangle;
     SDL_Rect destinationRectangle;
     bool isAnimated;
+    bool isAnimatedWhileNotMoving;
     int numFrames;
     int animationSpeed;
     bool isFixed;
@@ -37,11 +38,12 @@ public:
         SetTexture(assetTextureId);
     }
 
-    SpriteComponent(std::string id, int numFrames, int animationSpeed, bool hasDirections, bool isFixed){
+    SpriteComponent(std::string id, int numFrames, int animationSpeed, bool hasDirections, bool isFixed, bool isAnimatedWhileNotMoving){
         this->isAnimated = true;
         this->numFrames = numFrames;
         this->animationSpeed = animationSpeed;
         this->isFixed = isFixed;
+        this->isAnimatedWhileNotMoving = isAnimatedWhileNotMoving;
 
         if(hasDirections){
             Animation downAnimation = Animation(0, numFrames, animationSpeed);
@@ -87,9 +89,13 @@ public:
     }
 
     void Update(float deltaTime) override {
-        if (isAnimated && owner->IsMoving) {
+        // If the entity is moving and is animated, animate (flips between frames)
+        // If the entity is NOT moving but is animated while not moving, animate
+        if ((owner->IsMoving && isAnimated) || (!owner->IsMoving && isAnimatedWhileNotMoving))
+        {
             sourceRectangle.x = sourceRectangle.w * static_cast<int>((SDL_GetTicks()/animationSpeed)%numFrames);
         }
+
         sourceRectangle.y = animationIndex * transform->height;
         destinationRectangle.x = static_cast<int>(transform->position.x) - (isFixed ? 0 :  Game::camera.x);
         destinationRectangle.y = static_cast<int>(transform->position.y) - (isFixed ? 0 :  Game::camera.y);

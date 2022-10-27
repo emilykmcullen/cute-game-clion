@@ -13,14 +13,6 @@ Scene1 = {
     ----------------------------------------------------
     -- table to define the map config variables
     ----------------------------------------------------
---     map = {
---         textureAssetId = "landscape-texture",
---         file = "../../assets/landscape.map",
---         scale = 4,
---         tileSize = 32,
---         mapSizeX = 40,
---         mapSizeY = 30
---     },
     map = {
         textureAssetId = "bw-landscape",
         file = "../../assets/landscape.map",
@@ -54,6 +46,7 @@ Scene1 = {
                 sprite = {
                     textureAssetId = "player-texture",
                     animated = true,
+                    animatedWhileNotMoving = false,
                     frameCount = 2,
                     animationSpeed = 90,
                     hasDirections = true,
@@ -93,13 +86,21 @@ Scene1 = {
                 },
                 sprite = {
                     textureAssetId = "spotty-dog",
-                    animated = false,
-                    frameCount = 1,
-                    animationSpeed = 90,
-                    hasDirections = false,
-                    fixed = true
+                    animated = true,
+                    animatedWhileNotMoving = true,
+                    frameCount = 2,
+                    animationSpeed = 500,
+                    hasDirections = true,
+                    fixed = false
                 },
-                collider = { tag = "NPC" }
+                movementschedule = {
+                        destinations = {
+                                            [0] = { x = 500, y = 500},
+                                            [1] = { x = 1000, y = 1000},
+                                            [2] = { x = 0, y = 0}
+                                        },
+                        timeAtDestination = 10
+                }
             }
             --end of components
         }
