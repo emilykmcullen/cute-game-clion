@@ -15,7 +15,6 @@ float NormalizedVecsDotProduct(vec2 vecA, vec2 vecB)
 
 void NormalizeVector(vec2& vector)
 {
-    //Normalize the vectors
     float magnitude = sqrt((vector.x)*(vector.x) + (vector.y)*(vector.y));
     vector = { (vector.x)/magnitude, (vector.y)/magnitude};
 }

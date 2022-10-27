@@ -4,12 +4,20 @@
 #include <vector>
 #include <unordered_set>
 #include <iostream>
+#include "Constants.h"
+#include <string>
 
 typedef struct vec2
 {
     float x;
     float y;
 } vec2;
+
+typedef struct interaction
+{
+    InteractionType interactionType;
+    int info;
+} interaction;
 
 
 typedef struct TreeNode

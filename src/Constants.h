@@ -29,13 +29,19 @@ enum LayerType {
     NPC_LAYER = 3
 };
 
+
+enum InteractionType {
+    NO_INTERACTION = 0,
+    LOAD_SCENE = 1
+};
 const unsigned int NUM_LAYERS = 4;
 
 enum CollisionType {
     NO_COLLISION,
     PLAYER_NPC_COLLISION,
     PLAYER_VEGETATION_COLLISION,
-    PLAYER_LEVEL_COMPLETE_COLLISION
+    PLAYER_LEVEL_COMPLETE_COLLISION,
+    PLAYER_OBSTACLE_COLLISION
 };
 
 

@@ -1,6 +1,7 @@
 #include "./EntityManager.h"
 #include <iostream>
 #include "./Components/ColliderComponent.h"
+#include "./Components/InteractionComponent.h"
 
 void EntityManager::ClearData(){
     for (auto& entity: entities){
@@ -80,6 +81,14 @@ std::vector<Entity*> EntityManager::GetNonTileEntities() const {
     return selectedEntities;
 }
 
+//void EntityManager::SetNonTileEntities() {
+//    for (auto& entity: entities){
+//        if (entity->layer != 0){
+//            nonTileEntities.emplace_back(entity);
+//        }
+//    }
+//}
+
 std::vector<Entity*> EntityManager::GetEntitiesByLayer(LayerType layer) const {
     std::vector<Entity*> selectedEntities;
     for (auto& entity: entities){
@@ -112,8 +121,38 @@ CollisionType EntityManager::CheckPlayerCollisions() const {
                 if (thisCollider->colliderTag.compare("PLAYER") == 0 && thatCollider->colliderTag.compare("LEVEL_COMPLETE") == 0) {
                     return PLAYER_LEVEL_COMPLETE_COLLISION;
                 }
+                if (thisCollider->colliderTag.compare("PLAYER") == 0 && thatCollider->colliderTag.compare("OBSTACLE") == 0) {
+                    thisEntity->resetPosition = true;
+                    return PLAYER_OBSTACLE_COLLISION;
+                }
             }
         }
     }
     return NO_COLLISION;
+}
+
+
+interaction EntityManager::CheckIfClickedOnEntity(Sint32 x, Sint32 y)
+{
+    std::vector<Entity*> nonTileEntities = GetNonTileEntities();
+    for (int i = 0; i < nonTileEntities.size(); i++)
+    {
+        Entity* entity = nonTileEntities[i];
+
+        if (entity->HasComponent<ColliderComponent>() && entity->HasComponent<InteractionComponent>())
+        {
+            ColliderComponent* colliderComponent = entity->GetComponent<ColliderComponent>();
+            // Check if click is in bounds of collider
+            if (x > colliderComponent->destinationRectangle.x &&
+                x < colliderComponent->destinationRectangle.x + (colliderComponent->destinationRectangle.w * colliderComponent->transform->scale) &&
+                y > colliderComponent->destinationRectangle.y &&
+                y < colliderComponent->destinationRectangle.y + (colliderComponent->destinationRectangle.h * colliderComponent->transform->scale))
+            {
+                InteractionComponent* interactionComponent = entity->GetComponent<InteractionComponent>();
+                return interactionComponent->GetInteraction();
+            }
+        }
+    }
+    interaction fallbackInteraction { InteractionType::NO_INTERACTION, -1};
+    return fallbackInteraction;
 }

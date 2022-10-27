@@ -50,14 +50,22 @@ public:
             Animation rightAnimation = Animation(1, numFrames, animationSpeed);
             Animation leftAnimation = Animation(2, numFrames, animationSpeed);
             Animation upAnimation = Animation(3, numFrames, animationSpeed);
+            Animation downStationary = Animation(4, numFrames, animationSpeed);
+            Animation rightStationary = Animation(5, numFrames, animationSpeed);
+            Animation leftStationary = Animation(6, numFrames, animationSpeed);
+            Animation upStationary = Animation(7, numFrames, animationSpeed);
 
             animations.emplace("DownAnimation", downAnimation);
             animations.emplace("RightAnimation", rightAnimation);
             animations.emplace("LeftAnimation", leftAnimation);
             animations.emplace("UpAnimation", upAnimation);
+            animations.emplace("DownStationary", downStationary);
+            animations.emplace("RightStationary", rightStationary);
+            animations.emplace("LeftStationary", leftStationary);
+            animations.emplace("UpStationary", upStationary);
 
             this->animationIndex = 0;
-            this->currentAnimationName = "DownAnimation";
+            this->currentAnimationName = "RightStationary";
         }
         else {
             Animation singleAnimation = Animation(0, numFrames, animationSpeed);

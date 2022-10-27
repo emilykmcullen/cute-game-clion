@@ -6,11 +6,14 @@
 #include "./Constants.h"
 #include <vector>
 #include "Collision.h"
+#include "Map.h"
+#include "Utils.h"
 
 
 class EntityManager {
 private:
     std::vector<Entity*> entities;
+    //std::vector<Entity*> nonTileEntities;
 public:
     void ClearData();
     void Update(float deltaTime);
@@ -19,6 +22,7 @@ public:
     Entity& AddEntity(std::string entityName, LayerType layer);
     std::vector<Entity*> GetEntities() const;
     std::vector<Entity*> GetNonTileEntities() const;
+    //void SetNonTileEntities();
     std::vector<Entity*> GetEntitiesByLayer(LayerType layer) const;
     Entity* GetEntityByName(std::string name) const;
     CollisionType CheckPlayerCollisions() const;
@@ -27,6 +31,8 @@ public:
 
     unsigned int GetEntityCount();
     void ListAllEntities() const;
+
+    interaction CheckIfClickedOnEntity(Sint32 x, Sint32 y);
 
 
 };

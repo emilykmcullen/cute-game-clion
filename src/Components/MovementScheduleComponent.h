@@ -79,31 +79,57 @@ public:
             transform->velocity.y = (moveDirection.y * 100);
             // NEED TO CALCULATE WHICH SPRITE ANIMATION TO PLAY HERE
             owner->IsMoving = true;
-            if (moveDirection.x > 0)
+            float absX = abs(moveDirection.x);
+            float absY = abs(moveDirection.y);
+            if (absX > absY || absX > 0.5 ) // if X dir is bigger than Y direction, OR if X direction is actually just high (more than 0.5 for now)
             {
-                sprite->Play("RightAnimation");
+                if (moveDirection.x >= 0)
+                {
+
+                    sprite->Play("RightAnimation");
+                }
+                else
+                {
+                    sprite->Play("LeftAnimation");
+                }
             }
-            else if (moveDirection.x < 0)
+            else
             {
-                sprite->Play("LeftAnimation");
+                if (moveDirection.y >= 0)
+                {
+                    sprite->Play("DownAnimation");
+                }
+                else
+                {
+                    sprite->Play("UpAnimation");
+                }
             }
-            else if (moveDirection.y > 0)
-            {
-                sprite->Play("DownAnimation");
-            }
-            else if (moveDirection.y < 0)
-            {
-                sprite->Play("UpAnimation");
-            }
-            // Have we reached the destination (or within +/-2 units of it)?
-            if (ReachedDestination(100))
+            // Have we reached the destination (or within +/- units of it)?
+            if (ReachedDestination(4))
             {
                 atDestination = true;
                 owner->IsMoving = false;
                 timeTracker = 0;
+
+                if (transform->velocity.x > 0)
+                {
+                    sprite->Play("RightStationary");
+                }
+                else if (transform->velocity.x < 0)
+                {
+                    sprite->Play("LeftStationary");
+                }
+                else if (transform->velocity.y > 0)
+                {
+                    sprite->Play("DownStationary");
+                }
+                else
+                {
+                    sprite->Play("UpStationary");
+                }
+
                 transform->velocity.x = 0;
                 transform->velocity.y = 0;
-                sprite->Play("DownAnimation"); //temporary - need to add an animation for standing still
             }
         }
 

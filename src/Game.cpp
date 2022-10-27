@@ -6,10 +6,12 @@
 #include "./Components/KeyboardControlComponent.h"
 #include "./Components/ColliderComponent.h"
 #include "./Components/MovementScheduleComponent.h"
+#include "./Components/InteractionComponent.h"
 #include "./Entity.h"
 #include "./Component.h"
 #include "Map.h"
 #include "../lua/sol.hpp"
+#include "Utils.h"
 
 
 
@@ -71,7 +73,7 @@ void Game::Initialize(int width, int height) {
 
     CreateDebugGridRects();
 
-    LoadScene(1);
+    LoadScene(2);
 
     //std::cout << "PLAYER POS: " << mainPlayer->GetComponent<TransformComponent>()->position.x << std::endl;
     //std::cout << "PLAYER POS: " << mainPlayer->GetComponent<TransformComponent>()->position.y << std::endl;
@@ -243,10 +245,24 @@ void Game::LoadScene(int scenenum)
                 int timeAtDestination = static_cast<int>(entity["components"]["movementschedule"]["timeAtDestination"]);
                 newEntity.AddComponent<MovementScheduleComponent>(destinations, timeAtDestination);
             }
+
+            // Add interaction component
+            sol::optional<sol::table> existsInteractionComponent = entity["components"]["interaction"];
+            if (existsInteractionComponent != sol::nullopt) {
+                InteractionType interactionType1 = InteractionType::NO_INTERACTION;
+                std::string interactionType2 = entity["components"]["interaction"]["interactiontype"];
+                if (interactionType2 == "loadscene")
+                {
+                    interactionType1 = InteractionType::LOAD_SCENE;
+                }
+                int info = entity["components"]["interaction"]["info"];
+                newEntity.AddComponent<InteractionComponent>(interactionType1, info);
+            }
         }
         entityIndex++;
     }
     mainPlayer = manager.GetEntityByName("player");
+    //manager.SetNonTileEntities();
 }
 
 
@@ -312,20 +328,18 @@ void Game::ProcessInput(){
             if (event.key.keysym.sym == SDLK_ESCAPE){
                 isRunning =false;
             }
+            break;
         }
         case SDL_MOUSEBUTTONDOWN:
         {
-            // If mouse is clicked we want to determine if it's an interaction or a movement
-            // FOR NOW:
-            // If it's on a walkable box then it's a movement, that's all
-
-//            mouseClicked = true;
-//            clickX = event.button.x;
-//            clickY = event.button.y;
-
-
-
-
+            interaction interaction1 = manager.CheckIfClickedOnEntity(event.button.x, event.button.y);
+            if (interaction1.interactionType == InteractionType::LOAD_SCENE)
+            {
+                assetManager->ClearData();
+                manager.ClearData();
+                LoadScene(interaction1.info);
+            }
+            break;
         }
         default: {
             break;

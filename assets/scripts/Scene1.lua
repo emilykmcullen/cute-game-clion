@@ -7,7 +7,8 @@ Scene1 = {
         [0] = { type="texture", id = "landscape-texture", file = "../../assets/test-landscape.png" },
         [1] = { type="texture", id = "player-texture", file = "../../assets/monsterspritesheet.png" },
         [2] = { type="texture", id = "spotty-dog", file = "../../assets/spottydog.png" },
-        [3] = { type="texture", id = "bw-landscape", file = "../../assets/blackandwhitelandscape.png" }
+        [3] = { type="texture", id = "bw-landscape", file = "../../assets/blackandwhitelandscape.png" },
+        [4] = { type="texture", id = "house", file = "../../assets/house.png" }
 
     },
     ----------------------------------------------------
@@ -97,14 +98,52 @@ Scene1 = {
                         destinations = {
                                             [0] = { x = 500, y = 500},
                                             [1] = { x = 1000, y = 1000},
-                                            [2] = { x = 0, y = 0}
+                                            [2] = { x = 100, y = 1000},
+                                            [3] = { x = 100, y = 100},
+                                            [4] = { x = 500, y = 100}
                                         },
                         timeAtDestination = 10
                 }
             }
             --end of components
-        }
+        },
         -- end of this particular entity
+        [2] = {
+                    name = "house",
+                    layer = 1,
+                    components = {
+                        transform = {
+                            position = {
+                                x = 2000,
+                                y = 2000
+                            },
+                            velocity = {
+                                x = 0,
+                                y = 0
+                            },
+                            width = 96,
+                            height = 128,
+                            scale = 4,
+                            rotation = 0
+                        },
+                        sprite = {
+                            textureAssetId = "house",
+                            animated = false,
+                            animatedWhileNotMoving = false,
+                            frameCount = 1,
+                            animationSpeed = 0,
+                            hasDirections = false,
+                            fixed = true
+                        },
+                        collider = { tag = "OBSTACLE" },
+                        interaction = {
+                            interactiontype = "loadscene",
+                            info = 2
+                        }
+                    }
+                    --end of components
+                }
+                -- end of this particular entity
     }
     --end of entities
 }
