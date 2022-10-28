@@ -18,36 +18,46 @@ bool EntityManager::HasNoEntities(){
 
 void EntityManager::Update(float deltaTime){
     for (auto& entity: entities){
-        entity->CalculateColliderNextPosition(deltaTime);
+        if (entity->IsActive())
+        {
+            entity->CalculateColliderNextPosition(deltaTime);
+        }
     }
 
     // if there is going to be a collision, do appropriate actions
     CheckPlayerCollisions();
 
     for (auto& entity: entities){
+        if (entity->IsActive())
+        {
+            entity->CalculateColliderNextPosition(deltaTime);
+        }
         entity->Update(deltaTime);
     }
-    DestroyInactiveEntities();
+    //DestroyInactiveEntities();
 }
 
-void EntityManager::DestroyInactiveEntities() {
-    for (int i = 0; i < entities.size(); i++) {
-        if (!entities[i]->IsActive()) {
-            entities.erase(entities.begin() + i);
-        }
-    }
-}
+//void EntityManager::DestroyInactiveEntities() {
+//    for (int i = 0; i < entities.size(); i++) {
+//        if (!entities[i]->IsActive()) {
+//            entities.erase(entities.begin() + i);
+//        }
+//    }
+//}
 
 void EntityManager::Render(){
     for (int layerNumber = 0; layerNumber < NUM_LAYERS; layerNumber ++){
         for (auto& entity: GetEntitiesByLayer(static_cast<LayerType>(layerNumber))){
-            entity->Render();
+            if (entity->IsActive())
+            {
+                entity->Render();
+            }
         }
     }
 }
 
-Entity& EntityManager::AddEntity(std::string entityName, LayerType layer){
-    Entity *entity = new Entity(*this, entityName, layer);
+Entity& EntityManager::AddEntity(std::string entityName, LayerType layer, bool isActive){
+    Entity *entity = new Entity(*this, entityName, layer, isActive);
     entities.emplace_back(entity);
     return *entity;
 }
@@ -114,22 +124,26 @@ CollisionType EntityManager::CheckPlayerCollisions() const {
         //only check entities that are AFTER the current one (eg. 'to the right' of the current entity)
         //do not need to check entities before current entity as this combination will have already been check
         auto& thatEntity = entities[j];
-        if (thisEntity->name.compare(thatEntity->name) != 0 && thatEntity->HasComponent<ColliderComponent>()) {
-            ColliderComponent* thatCollider = thatEntity->GetComponent<ColliderComponent>();
-            if (Collision::CheckRectangleCollision(thisCollider->nextPosCollider, thatCollider->nextPosCollider)) {
-                if (thisCollider->colliderTag.compare("PLAYER") == 0 && thatCollider->colliderTag.compare("NPC") == 0) {
-                    thisEntity->resetPosition = true;
-                    return PLAYER_NPC_COLLISION;
-                }
-                if (thisCollider->colliderTag.compare("PLAYER") == 0 && thatCollider->colliderTag.compare("LEVEL_COMPLETE") == 0) {
-                    return PLAYER_LEVEL_COMPLETE_COLLISION;
-                }
-                if (thisCollider->colliderTag.compare("PLAYER") == 0 && thatCollider->colliderTag.compare("OBSTACLE") == 0) {
-                    thisEntity->resetPosition = true;
-                    return PLAYER_OBSTACLE_COLLISION;
+        if (thatEntity->IsActive())
+        {
+            if (thisEntity->name.compare(thatEntity->name) != 0 && thatEntity->HasComponent<ColliderComponent>()) {
+                ColliderComponent* thatCollider = thatEntity->GetComponent<ColliderComponent>();
+                if (Collision::CheckRectangleCollision(thisCollider->nextPosCollider, thatCollider->nextPosCollider)) {
+                    if (thisCollider->colliderTag.compare("PLAYER") == 0 && thatCollider->colliderTag.compare("NPC") == 0) {
+                        thisEntity->resetPosition = true;
+                        return PLAYER_NPC_COLLISION;
+                    }
+                    if (thisCollider->colliderTag.compare("PLAYER") == 0 && thatCollider->colliderTag.compare("LEVEL_COMPLETE") == 0) {
+                        return PLAYER_LEVEL_COMPLETE_COLLISION;
+                    }
+                    if (thisCollider->colliderTag.compare("PLAYER") == 0 && thatCollider->colliderTag.compare("OBSTACLE") == 0) {
+                        thisEntity->resetPosition = true;
+                        return PLAYER_OBSTACLE_COLLISION;
+                    }
                 }
             }
         }
+
     }
     return NO_COLLISION;
 }
@@ -140,24 +154,21 @@ interaction EntityManager::CheckIfClickedOnEntity(Sint32 x, Sint32 y)
     std::vector<Entity*> nonTileEntities = GetNonTileEntities();
     for (int i = 0; i < nonTileEntities.size(); i++)
     {
+        //TO DO: BETTER WAY TO DO THIS RATHER THAN GETTING THE NON-TILE ENTITIES EVERY FRAME?
         Entity* entity = nonTileEntities[i];
-
-
-
-        if (entity->HasComponent<ColliderComponent>() && entity->HasComponent<InteractionComponent>())
+        if (entity->HasComponent<InteractionComponent>() && entity->IsActive())
         {
-            ColliderComponent* colliderComponent = entity->GetComponent<ColliderComponent>();
+            InteractionComponent* interactionComponent = entity->GetComponent<InteractionComponent>();
             // Check if click is in bounds of collider
-            if (x > colliderComponent->destinationRectangle.x &&
-                x < colliderComponent->destinationRectangle.x + (colliderComponent->destinationRectangle.w * colliderComponent->transform->scale) &&
-                y > colliderComponent->destinationRectangle.y &&
-                y < colliderComponent->destinationRectangle.y + (colliderComponent->destinationRectangle.h * colliderComponent->transform->scale))
+            if (x > interactionComponent->interactionRect.x &&
+                x < interactionComponent->interactionRect.x + interactionComponent->interactionRect.w &&
+                y > interactionComponent->interactionRect.y &&
+                y < interactionComponent->interactionRect.y + interactionComponent->interactionRect.h)
             {
-                InteractionComponent* interactionComponent = entity->GetComponent<InteractionComponent>();
                 return interactionComponent->GetInteraction();
             }
         }
     }
-    interaction fallbackInteraction { InteractionType::NO_INTERACTION, -1};
+    interaction fallbackInteraction { InteractionType::NO_INTERACTION, "0"};
     return fallbackInteraction;
 }

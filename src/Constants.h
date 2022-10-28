@@ -17,7 +17,9 @@ enum LayerType {
 
 enum InteractionType {
     NO_INTERACTION = 0,
-    LOAD_SCENE = 1
+    LOAD_SCENE = 1,
+    SPEAK = 2,
+    DEACTIVATE = 3
 };
 const unsigned int NUM_LAYERS = 4;
 

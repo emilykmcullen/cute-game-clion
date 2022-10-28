@@ -25,11 +25,13 @@ public:
     std::string name;
     LayerType layer;
     Entity(EntityManager& manager);
-    Entity(EntityManager& manager, std::string name, LayerType layer);
+    Entity(EntityManager& manager, std::string name, LayerType layer, bool isActive);
     void Update(float deltaTime);
     void Render();
     void Destroy();
     bool IsActive() const;
+    void Activate(){ isActive = true; }
+    void Deactivate(){ isActive = false; }
     void ListAllComponents() const;
     void CalculateColliderNextPosition(float deltaTime);
 

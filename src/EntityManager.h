@@ -19,7 +19,7 @@ public:
     void Update(float deltaTime);
     void Render();
     bool HasNoEntities();
-    Entity& AddEntity(std::string entityName, LayerType layer);
+    Entity& AddEntity(std::string entityName, LayerType layer, bool isActive);
     std::vector<Entity*> GetEntities() const;
     std::vector<Entity*> GetNonTileEntities() const;
     //void SetNonTileEntities();

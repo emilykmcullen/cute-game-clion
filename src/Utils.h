@@ -16,7 +16,7 @@ typedef struct vec2
 typedef struct interaction
 {
     InteractionType interactionType;
-    int info;
+    std::string info;
 } interaction;
 
 

@@ -8,7 +8,8 @@ Scene1 = {
         [1] = { type="texture", id = "player-texture", file = "../../assets/monsterspritesheet.png" },
         [2] = { type="texture", id = "spotty-dog", file = "../../assets/spottydog.png" },
         [3] = { type="texture", id = "bw-landscape", file = "../../assets/blackandwhitelandscape.png" },
-        [4] = { type="texture", id = "house", file = "../../assets/house.png" }
+        [4] = { type="texture", id = "house", file = "../../assets/house.png" },
+        [5] = { type="texture", id = "hello", file = "../../assets/hello.png" }
 
     },
     ----------------------------------------------------
@@ -30,6 +31,7 @@ Scene1 = {
         [0] = {
             name = "player",
             layer = 2,
+            isActive = true,
             components = {
                 transform = {
                     position = {
@@ -71,6 +73,7 @@ Scene1 = {
         [1] = {
             name = "dog",
             layer = 3,
+            isActive = true,
             components = {
                 transform = {
                     position = {
@@ -104,7 +107,11 @@ Scene1 = {
                                             [4] = { x = 500, y = 100}
                                         },
                         timeAtDestination = 10
-                }
+                },
+                interaction = {
+                                interactiontype = "speak",
+                                info = "hello"
+                            }
             }
             --end of components
         },
@@ -112,18 +119,19 @@ Scene1 = {
         [2] = {
                     name = "house",
                     layer = 1,
+                    isActive = true,
                     components = {
                         transform = {
                             position = {
-                                x = 2000,
-                                y = 2000
+                                x = 1664,
+                                y = 256
                             },
                             velocity = {
                                 x = 0,
                                 y = 0
                             },
                             width = 96,
-                            height = 128,
+                            height = 96,
                             scale = 4,
                             rotation = 0
                         },
@@ -139,11 +147,48 @@ Scene1 = {
                         collider = { tag = "OBSTACLE" },
                         interaction = {
                             interactiontype = "loadscene",
-                            info = 2
+                            info = "2"
                         }
                     }
                     --end of components
-                }
+                },
+                -- end of this particular entity
+        [3] = {
+                    name = "hello",
+                    layer = 3,
+                    isActive = false,
+                    components = {
+                        transform = {
+                            position = {
+                                x = 500,
+                                y = 500
+                            },
+                            velocity = {
+                                x = 0,
+                                y = 0
+                            },
+                            width = 600,
+                            height = 300,
+                            scale = 1,
+                            rotation = 0
+                        },
+                        sprite = {
+                            textureAssetId = "hello",
+                            animated = false,
+                            animatedWhileNotMoving = false,
+                            frameCount = 1,
+                            animationSpeed = 90,
+                            hasDirections = false,
+                            fixed = false
+                        },
+                        interaction = {
+                                        interactiontype = "deactivate",
+                                        info = "hello"
+                                    }
+
+                    }
+                    --end of components
+                },
                 -- end of this particular entity
     }
     --end of entities

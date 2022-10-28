@@ -39,6 +39,7 @@ public:
     void Test();
     void HandleCameraMovement();
     void CheckPlayerCollisions();
+    void HandleInteraction(interaction interaction);
     static int scroll;
 };
 

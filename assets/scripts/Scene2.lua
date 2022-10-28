@@ -30,6 +30,7 @@ Scene2 = {
         [0] = {
             name = "player",
             layer = 2,
+            isActive = true,
             components = {
                 transform = {
                     position = {

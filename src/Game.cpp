@@ -145,9 +145,10 @@ void Game::LoadScene(int scenenum)
             sol::table entity = levelEntities[entityIndex];
             std::string entityName = entity["name"];
             LayerType entityLayerType = static_cast<LayerType>(static_cast<int>(entity["layer"]));
+            bool isActive = entity["isActive"];
 
             // Add new entity
-            auto& newEntity(manager.AddEntity(entityName, entityLayerType));
+            auto& newEntity(manager.AddEntity(entityName, entityLayerType, isActive));
 
             // Add Transform Component
             sol::optional<sol::table> existsTransformComponent = entity["components"]["transform"];
@@ -247,7 +248,15 @@ void Game::LoadScene(int scenenum)
                 {
                     interactionType1 = InteractionType::LOAD_SCENE;
                 }
-                int info = entity["components"]["interaction"]["info"];
+                else if (interactionType2 == "speak")
+                {
+                    interactionType1 = InteractionType::SPEAK;
+                }
+                else if (interactionType2 == "deactivate")
+                {
+                    interactionType1 = InteractionType::DEACTIVATE;
+                }
+                std::string info = entity["components"]["interaction"]["info"];
                 newEntity.AddComponent<InteractionComponent>(interactionType1, info);
             }
         }
@@ -273,15 +282,7 @@ void Game::ProcessInput(){
         case SDL_MOUSEBUTTONDOWN:
         {
             interaction interaction1 = manager.CheckIfClickedOnEntity(event.button.x, event.button.y);
-            if (interaction1.interactionType == InteractionType::LOAD_SCENE)
-            {
-                assetManager->ClearData();
-                manager.ClearData();
-                Entity* me = manager.GetEntityByName("player");
-                LoadScene(interaction1.info);
-
-
-            }
+            HandleInteraction(interaction1);
             break;
         }
         default: {
@@ -382,4 +383,25 @@ void Game::Destroy() {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+}
+
+void Game::HandleInteraction(interaction interaction)
+{
+    if (interaction.interactionType == InteractionType::LOAD_SCENE)
+    {
+        assetManager->ClearData();
+        manager.ClearData();
+        int i = std::stoi(interaction.info);
+        LoadScene(i);
+    }
+    else if (interaction.interactionType == InteractionType::SPEAK)
+    {
+        Entity* entity = manager.GetEntityByName(interaction.info);
+        entity->Activate();
+    }
+    else if (interaction.interactionType == InteractionType::DEACTIVATE)
+    {
+        manager.GetEntityByName(interaction.info)->Deactivate();
+    }
+
 }

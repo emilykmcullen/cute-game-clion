@@ -117,7 +117,10 @@ public:
         // If the entity is NOT moving but is animated while not moving, animate
         if ((owner->IsMoving && isAnimated) || (!owner->IsMoving && isAnimatedWhileNotMoving))
         {
-            sourceRectangle.x = sourceRectangle.w * static_cast<int>((SDL_GetTicks()/animationSpeed)%numFrames);
+            if (animationSpeed !=0 && numFrames != 0)
+            {
+                sourceRectangle.x = sourceRectangle.w * static_cast<int>((SDL_GetTicks()/animationSpeed)%numFrames);
+            }
         }
 
         sourceRectangle.y = animationIndex * transform->height;

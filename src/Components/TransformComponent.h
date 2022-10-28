@@ -53,6 +53,8 @@ public:
         {
             rect.y += velocity.y * deltaTime;
         }
+//        rect.x -= Game::camera.x;
+//        rect.y -= Game::camera.y;
         return rect;
     }
 
