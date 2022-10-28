@@ -5,8 +5,11 @@
 
 void EntityManager::ClearData(){
     for (auto& entity: entities){
-        entity->Destroy();
+        //entity->Destroy();
+        delete entity;
     }
+    entities.clear();
+    entities.shrink_to_fit();
 }
 
 bool EntityManager::HasNoEntities(){
@@ -138,6 +141,8 @@ interaction EntityManager::CheckIfClickedOnEntity(Sint32 x, Sint32 y)
     for (int i = 0; i < nonTileEntities.size(); i++)
     {
         Entity* entity = nonTileEntities[i];
+
+
 
         if (entity->HasComponent<ColliderComponent>() && entity->HasComponent<InteractionComponent>())
         {

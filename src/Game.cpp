@@ -9,13 +9,9 @@
 #include "./Components/InteractionComponent.h"
 #include "./Entity.h"
 #include "./Component.h"
-#include "Map.h"
+
 #include "../lua/sol.hpp"
 #include "Utils.h"
-
-
-
-
 
 SDL_Renderer* Game::renderer;
 SDL_Event Game::event;
@@ -24,6 +20,7 @@ Entity* mainPlayer = NULL;
 EntityManager manager;
 AssetManager* Game::assetManager = new AssetManager(&manager);
 Map* gameMap;
+int Game::scroll = 1;
 
 Game::Game(){
     this->isRunning =false;
@@ -66,14 +63,8 @@ void Game::Initialize(int width, int height) {
 
     isRunning = true;
 
-    //for boxes
-    color_buffer = (uint32_t*)malloc(sizeof(uint32_t) * WINDOW_WIDTH * WINDOW_HEIGHT);
-    color_buffer_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, WINDOW_WIDTH, WINDOW_HEIGHT);
 
-
-    CreateDebugGridRects();
-
-    LoadScene(2);
+    LoadScene(1);
 
     //std::cout << "PLAYER POS: " << mainPlayer->GetComponent<TransformComponent>()->position.x << std::endl;
     //std::cout << "PLAYER POS: " << mainPlayer->GetComponent<TransformComponent>()->position.y << std::endl;
@@ -125,6 +116,7 @@ void Game::LoadScene(int scenenum)
     std::string mapTextureId = levelMap["textureAssetId"];
     std::string mapFile = levelMap["file"];
     std::cout << "MAPTEXID: " << mapTextureId << std::endl;
+    scroll = levelMap["scroll"];
 
     gameMap = new Map(
             mapTextureId,
@@ -265,58 +257,6 @@ void Game::LoadScene(int scenenum)
     //manager.SetNonTileEntities();
 }
 
-
-//for boxes
-void Game::RenderColorBuffer()
-{
-    //final param is the width of our row
-    SDL_UpdateTexture(color_buffer_texture, NULL, color_buffer, (int)(WINDOW_WIDTH * sizeof(uint32_t)));
-    SDL_RenderCopy(renderer, color_buffer_texture, NULL, NULL);
-}
-
-void Game::DrawRect(int x, int y, int width, int height, uint32_t color) {
-    for (int i = 0; i < width; i++) {
-        for (int j = 0; j < height; j++) {
-            int current_x = x + i;
-            int current_y = y + j;
-            color_buffer[(WINDOW_WIDTH * current_y) + current_x] = color;
-        }
-    }
-}
-
-void Game::CreateDebugGridRects()
-{
-    int rectCount = BOXES_PER_ROW_AND_COLUMN * BOXES_PER_ROW_AND_COLUMN;
-    int x = 0;
-    int y = 0;
-
-    int test = sizeof(SDL_Rect) * rectCount;
-    rects = (SDL_Rect*)malloc(test);
-    for (int i = 0; i < rectCount; i++)
-    {
-
-        SDL_Rect rect = {x, y, 0, 0};
-        rect.w = BOX_WIDTH;
-        rect.h = BOX_HEIGHT;
-        rects[i] = rect;
-
-        // *rects = rect
-        // rects++;
-
-        //adds 12
-        if (x < WINDOW_WIDTH - BOX_WIDTH)
-        {
-            x += BOX_WIDTH;
-        }
-        else
-        {
-            x = 0;
-            y += BOX_HEIGHT;
-        }
-        //std::cout << "X: " << x << ", Y: " << y << std::endl;
-    }
-}
-
 void Game::ProcessInput(){
     SDL_PollEvent(&event);
     switch (event.type){
@@ -337,7 +277,10 @@ void Game::ProcessInput(){
             {
                 assetManager->ClearData();
                 manager.ClearData();
+                Entity* me = manager.GetEntityByName("player");
                 LoadScene(interaction1.info);
+
+
             }
             break;
         }
@@ -386,8 +329,6 @@ void Game::Render(){
     SDL_SetRenderDrawColor(renderer, 21, 21,21 , 255);
     SDL_RenderClear(renderer);
 
-    SDL_RenderDrawRects(renderer, rects, BOXES_PER_ROW_AND_COLUMN*BOXES_PER_ROW_AND_COLUMN);
-
     //if(manager.HasNoEntities()){
         //return;
     //}
@@ -403,16 +344,31 @@ void Game::HandleCameraMovement() {
     // if it's less than 0 on x/y it gets clamped back to 0
     // if it's more than the camera width/height then it gets clamped to width/height
 
-    if (mainPlayer) {
-        TransformComponent* mainPlayerTransform = mainPlayer->GetComponent<TransformComponent>();
-        camera.x = mainPlayerTransform->position.x - (WINDOW_WIDTH / 2);
-        //as soon as player reaches half of the window, only then the camera follows
-        camera.y = mainPlayerTransform->position.y - (WINDOW_HEIGHT / 2);
-        //clamping camera values so doesnt go offscreen
-        camera.x = camera.x < 0 ? 0 : camera.x;
-        camera.y = camera.y < 0 ? 0 : camera.y;
-        camera.x = camera.x > camera.w ? camera.w : camera.x;
-        camera.y = camera.y > camera.h ? camera.h : camera.y;
+    if (mainPlayer ) {
+        if (Game::scroll > 1)
+        {
+            TransformComponent* mainPlayerTransform = mainPlayer->GetComponent<TransformComponent>();
+            camera.x = mainPlayerTransform->position.x - (WINDOW_WIDTH / 2);
+            //std::cout << "CAMERA VALUES BEFORE CLAMPING" << std::endl;
+            //std::cout << "Camera.x: " << camera.x << ", camera.y: " << camera.y << std::endl;
+            //as soon as player reaches half of the window, only then the camera follows
+            camera.y = mainPlayerTransform->position.y - (WINDOW_HEIGHT / 2);
+
+            //clamping camera values so doesnt go offscreen
+            camera.x = camera.x < 0 ? 0 : camera.x;
+            camera.y = camera.y < 0 ? 0 : camera.y;
+            camera.x = camera.x > camera.w ? camera.w : camera.x;
+            camera.y = camera.y > camera.h ? camera.h : camera.y;
+
+            //std::cout << "CAMERA VALUES AFTER CLAMPING" << std::endl;
+            //std::cout << "Camera.x: " << camera.x << ", camera.y: " << camera.y << std::endl;
+        }
+        else
+        {
+            camera.x = 0;
+            camera.y = 0;
+        }
+
     }
 }
 

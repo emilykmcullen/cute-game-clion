@@ -20,7 +20,8 @@ Scene1 = {
         scale = 4,
         tileSize = 32,
         mapSizeX = 20,
-        mapSizeY = 10
+        mapSizeY = 10,
+        scroll = 2
     },
     ----------------------------------------------------
     -- table to define entities and their components
@@ -131,7 +132,7 @@ Scene1 = {
                             animated = false,
                             animatedWhileNotMoving = false,
                             frameCount = 1,
-                            animationSpeed = 0,
+                            animationSpeed = 1,
                             hasDirections = false,
                             fixed = true
                         },

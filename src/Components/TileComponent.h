@@ -27,8 +27,6 @@ public:
 
         position.x = x;
         position.y = y;
-        std::cout << "Source rec.x: " << sourceRectangle.x << ", source rec.y: " << sourceRectangle.y << std::endl;
-
     }
 
     ~TileComponent() {

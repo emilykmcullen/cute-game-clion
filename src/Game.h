@@ -4,6 +4,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include "Map.h"
 
 #include "AssetManager.h"
 
@@ -12,22 +13,6 @@ private:
     bool isRunning;
 
     SDL_Window *window;
-
-
-    // Debug visualizations:
-    // TO DO: tidy these up elsewhere
-    uint32_t* color_buffer = NULL;
-    SDL_Texture* color_buffer_texture = NULL;
-    void RenderColorBuffer();
-    void ClearColorBuffer(uint32_t color);
-    void DrawRect(int x, int y, int width, int height, uint32_t color);
-    void DrawGrid(uint32_t color, int rectHeight, int rectWidth);
-    void DrawSceneBoxes();
-    void CreateDebugGridRects();
-    SDL_Rect* rects = nullptr;
-    //
-
-    void SetPlayerPath();
 
     int frameCount = 0;
 
@@ -54,6 +39,7 @@ public:
     void Test();
     void HandleCameraMovement();
     void CheckPlayerCollisions();
+    static int scroll;
 };
 
 

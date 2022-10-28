@@ -32,21 +32,34 @@ public:
     }
 
     void Update(float deltaTime) override {
-        collider.x = static_cast<int>(transform->position.x);
-        collider.y = static_cast<int>(transform->position.y);
+
+        collider.x = static_cast<int>(transform->position.x) - Game::camera.x;
+        collider.y = static_cast<int>(transform->position.y) - Game::camera.y;
         collider.w = transform->width * transform->scale;
         collider.h = transform->height * transform->scale;
-        destinationRectangle.x = collider.x - Game::camera.x;
-        destinationRectangle.y = collider.y - Game::camera.y;
-        this->nextPosCollider = collider;
+        destinationRectangle.x = collider.x;
+        destinationRectangle.y = collider.y;
+        nextPosCollider = collider;
+
+        //--ORIGINAL--
+//        collider.x = static_cast<int>(transform->position.x);
+//        collider.y = static_cast<int>(transform->position.y);
+//        collider.w = transform->width * transform->scale;
+//        collider.h = transform->height * transform->scale;
+//        destinationRectangle.x = collider.x - Game::camera.x;
+//        destinationRectangle.y = collider.y - Game::camera.y;
+//        this->nextPosCollider = collider;
     }
 
 
     //just used for viewing the bounding boxes, can be removed later
-    // void Render() override {
-    //     SDL_SetRenderDrawColor(Game::renderer, 255,255,255,255);
-    //     SDL_RenderDrawRect(Game::renderer, &destinationRectangle);
-    //     SDL_RenderDrawRect(Game::renderer, &sourceRectangle);
+     void Render() override {
+         SDL_SetRenderDrawColor(Game::renderer, 255,0,0,255);
+         SDL_RenderDrawRect(Game::renderer, &destinationRectangle);
+         SDL_RenderDrawRect(Game::renderer, &sourceRectangle);
+         SDL_RenderDrawRect(Game::renderer, &collider);
+         //SDL_RenderDrawRect(Game::renderer, &nextPosCollider);
+        //SDL_RenderDrawRect(Game::renderer,&Game::camera);
 
-    // }
+     }
 };

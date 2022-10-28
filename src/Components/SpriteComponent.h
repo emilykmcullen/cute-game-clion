@@ -40,8 +40,24 @@ public:
 
     SpriteComponent(std::string id, int numFrames, int animationSpeed, bool hasDirections, bool isFixed, bool isAnimatedWhileNotMoving){
         this->isAnimated = true;
-        this->numFrames = numFrames;
-        this->animationSpeed = animationSpeed;
+        if (animationSpeed == 0)
+        {
+            std::cout << "ERROR: animationSpeed cannot be 0" << std::endl;
+            this->animationSpeed = 1;
+        }
+        else
+        {
+            this->animationSpeed = animationSpeed;
+        }
+        if (numFrames == 0)
+        {
+            std::cout << "ERROR: numFrames cannot be 0" << std::endl;
+            this->numFrames = 1;
+        }
+        else
+        {
+            this->numFrames = numFrames;
+        }
         this->isFixed = isFixed;
         this->isAnimatedWhileNotMoving = isAnimatedWhileNotMoving;
 

@@ -26,9 +26,9 @@ public:
     SDL_Rect CalculateNextPosition(SDL_Rect rect, float deltaTime)
     {
         // Clamp to right edge of map
-        if ((rect.x + (velocity.x * deltaTime)) > (WINDOW_WIDTH * 2) - (PLAYER_SPRITE_WIDTH * scale))
+        if ((rect.x + (velocity.x * deltaTime)) > (WINDOW_WIDTH * Game::scroll) - (width * scale))
         {
-            rect.x = (WINDOW_WIDTH * 2) - (PLAYER_SPRITE_WIDTH * scale);
+            rect.x = (WINDOW_WIDTH * Game::scroll) - (width * scale);
         }
             // Clamp to left edge
         else if ((rect.x + (velocity.x * deltaTime)) < 0)
@@ -41,9 +41,9 @@ public:
         }
 
         // Clamp to bottom of map
-        if ((rect.y + (velocity.y * deltaTime)) > (WINDOW_HEIGHT * 2) - (PLAYER_SPRITE_HEIGHT * scale))
+        if ((rect.y + (velocity.y * deltaTime)) > (WINDOW_HEIGHT * Game::scroll) - (height * scale))
         {
-            rect.y = (WINDOW_HEIGHT* 2) - (PLAYER_SPRITE_HEIGHT * scale);
+            rect.y = (WINDOW_HEIGHT* Game::scroll) - (height * scale);
         }
         else if ((rect.y + (velocity.y * deltaTime)) < 0)
         {
@@ -64,9 +64,9 @@ public:
         if (!owner->resetPosition)
         {
             // Clamp to right edge of map
-            if ((position.x + (velocity.x * deltaTime)) > (WINDOW_WIDTH * 2) - (width * scale))
+            if ((position.x + (velocity.x * deltaTime)) > (WINDOW_WIDTH * Game::scroll) - (width * scale))
             {
-                position.x = (WINDOW_WIDTH * 2) - (width * scale);
+                position.x = (WINDOW_WIDTH * Game::scroll) - (width * scale);
             }
                 // Clamp to left edge
             else if ((position.x + (velocity.x * deltaTime)) < 0)
@@ -79,9 +79,9 @@ public:
             }
 
             // Clamp to bottom of map
-            if ((position.y + (velocity.y * deltaTime)) > (WINDOW_HEIGHT * 2) - (height * scale))
+            if ((position.y + (velocity.y * deltaTime)) > (WINDOW_HEIGHT * Game::scroll) - (height * scale))
             {
-                position.y = (WINDOW_HEIGHT* 2) - (height * scale);
+                position.y = (WINDOW_HEIGHT* Game::scroll) - (height * scale);
             }
             else if ((position.y + (velocity.y * deltaTime)) < 0)
             {
