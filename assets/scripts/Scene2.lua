@@ -44,7 +44,7 @@ Scene2 = {
                     width = 96,
                     height = 64,
                     scale = 2,
-                    rotation = 0
+                    centered = false
                 },
                 sprite = {
                     textureAssetId = "player-texture",

@@ -21,6 +21,14 @@ public:
         this->nextPosCollider = collider;
     }
 
+    ~ColliderComponent()
+    {
+        if (transform)
+        {
+            delete transform;
+        }
+    }
+
     void Initialize() override {
         //get and set the transform, only IF the entity has a transform component
         if (owner->HasComponent<TransformComponent>()){

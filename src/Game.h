@@ -41,6 +41,7 @@ public:
     void CheckPlayerCollisions();
     void HandleInteraction(interaction interaction);
     static int scroll;
+    static bool suspendMovement;
 };
 
 

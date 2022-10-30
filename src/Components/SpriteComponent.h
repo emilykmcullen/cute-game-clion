@@ -12,7 +12,9 @@ class SpriteComponent: public Component {
 private:
     TransformComponent* transform;
     SDL_Texture* texture;
+    // The rectangle we are getting the sprite from, this is used on the spritesheet and isn't an on screen rect
     SDL_Rect sourceRectangle;
+    // Where we will display the sprite on screen
     SDL_Rect destinationRectangle;
     bool isAnimated;
     bool isAnimatedWhileNotMoving;
@@ -93,6 +95,15 @@ public:
         SetTexture(id);
     }
 
+    ~SpriteComponent()
+    {
+        if (transform != nullptr)
+        {
+            delete transform;
+        }
+        SDL_DestroyTexture(texture);
+    }
+
     void Play(std::string animationName){
         numFrames = animations[animationName].numFrames;
         animationIndex = animations[animationName].index;
@@ -113,21 +124,25 @@ public:
     }
 
     void Update(float deltaTime) override {
-        // If the entity is moving and is animated, animate (flips between frames)
-        // If the entity is NOT moving but is animated while not moving, animate
-        if ((owner->IsMoving && isAnimated) || (!owner->IsMoving && isAnimatedWhileNotMoving))
+        if (!Game::suspendMovement)
         {
-            if (animationSpeed !=0 && numFrames != 0)
+            // If the entity is moving and is animated, animate (flips between frames)
+            // If the entity is NOT moving but is animated while not moving, animate
+            if ((owner->IsMoving && isAnimated) || (!owner->IsMoving && isAnimatedWhileNotMoving))
             {
-                sourceRectangle.x = sourceRectangle.w * static_cast<int>((SDL_GetTicks()/animationSpeed)%numFrames);
+                if (animationSpeed !=0 && numFrames != 0)
+                {
+                    sourceRectangle.x = sourceRectangle.w * static_cast<int>((SDL_GetTicks()/animationSpeed)%numFrames);
+                }
             }
+
+            sourceRectangle.y = animationIndex * transform->height;
+            destinationRectangle.x = static_cast<int>(transform->position.x) - (isFixed ? 0 :  Game::camera.x);
+            destinationRectangle.y = static_cast<int>(transform->position.y) - (isFixed ? 0 :  Game::camera.y);
+            destinationRectangle.w = transform->width * transform->scale;
+            destinationRectangle.h = transform->height * transform->scale;
         }
 
-        sourceRectangle.y = animationIndex * transform->height;
-        destinationRectangle.x = static_cast<int>(transform->position.x) - (isFixed ? 0 :  Game::camera.x);
-        destinationRectangle.y = static_cast<int>(transform->position.y) - (isFixed ? 0 :  Game::camera.y);
-        destinationRectangle.w = transform->width * transform->scale;
-        destinationRectangle.h = transform->height * transform->scale;
     }
 
 

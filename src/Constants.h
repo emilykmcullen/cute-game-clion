@@ -11,9 +11,10 @@ enum LayerType {
     TILEMAP_LAYER = 0,
     OBSTACLE_LAYER = 1,
     PLAYER_LAYER = 2,
-    NPC_LAYER = 3
+    NPC_LAYER = 3,
+    INTERACTION_LAYER = 4
 };
-
+const unsigned int NUM_LAYERS = 5;
 
 enum InteractionType {
     NO_INTERACTION = 0,
@@ -21,7 +22,7 @@ enum InteractionType {
     SPEAK = 2,
     DEACTIVATE = 3
 };
-const unsigned int NUM_LAYERS = 4;
+
 
 enum CollisionType {
     NO_COLLISION,

@@ -6,7 +6,10 @@
 void EntityManager::ClearData(){
     for (auto& entity: entities){
         //entity->Destroy();
-        delete entity;
+        if (entity != nullptr)
+        {
+            delete entity;
+        }
     }
     entities.clear();
     entities.shrink_to_fit();
@@ -149,8 +152,10 @@ CollisionType EntityManager::CheckPlayerCollisions() const {
 }
 
 
+
 interaction EntityManager::CheckIfClickedOnEntity(Sint32 x, Sint32 y)
 {
+    Entity* trackedEntity = nullptr;
     std::vector<Entity*> nonTileEntities = GetNonTileEntities();
     for (int i = 0; i < nonTileEntities.size(); i++)
     {
@@ -165,10 +170,34 @@ interaction EntityManager::CheckIfClickedOnEntity(Sint32 x, Sint32 y)
                 y > interactionComponent->interactionRect.y &&
                 y < interactionComponent->interactionRect.y + interactionComponent->interactionRect.h)
             {
-                return interactionComponent->GetInteraction();
+                Entity* player = GetEntityByName("player");
+                TransformComponent* playerTransform = player->GetComponent<TransformComponent>();
+                int playerX = (int)playerTransform->position.x - Game::camera.x;
+                int playerY = (int)playerTransform->position.y - Game::camera.y;
+                SDL_Rect playerRect = { playerX, playerY,  playerTransform->width * playerTransform->scale, playerTransform->height * playerTransform->scale };
+                // Is the interactable entity near enough to the player?
+                if (Collision::CheckRectangleCollisionWithinAllowance(playerRect, interactionComponent->interactionRect, 5))
+                {
+                    if (trackedEntity == nullptr)
+                    {
+                        trackedEntity = entity;
+                    }
+                    else if (entity->IsActive() && static_cast<int>(entity->layer) > static_cast<int>(trackedEntity->layer))
+                    {
+                        trackedEntity = entity;
+                    }
+                }
             }
         }
     }
-    interaction fallbackInteraction { InteractionType::NO_INTERACTION, "0"};
-    return fallbackInteraction;
+    if (trackedEntity == nullptr)
+    {
+        interaction fallbackInteraction { InteractionType::NO_INTERACTION, "0"};
+        return fallbackInteraction;
+    }
+    else
+    {
+        InteractionComponent* interactionComponent = trackedEntity->GetComponent<InteractionComponent>();
+        return interactionComponent->GetInteraction();
+    }
 }

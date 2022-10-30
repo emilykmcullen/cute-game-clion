@@ -17,10 +17,21 @@ public:
     SDL_Rect interactionRect;
     TransformComponent* transform = nullptr;
 
+    InteractionComponent(InteractionType interaction, std::string info, int x, int y, int width, int height)
+    {
+        this->interactionobj.interactionType = interaction;
+        this->interactionobj.info = info;
+        this->interactionRect = { x, y, width, height };
+    }
+
     InteractionComponent(InteractionType interaction, std::string info)
     {
         this->interactionobj.interactionType = interaction;
         this->interactionobj.info = info;
+    }
+
+    ~InteractionComponent()
+    {
     }
 
     interaction GetInteraction() const { return interactionobj; }
@@ -29,22 +40,26 @@ public:
         //get and set the transform, only IF the entity has a transform component
         if (owner->HasComponent<TransformComponent>()){
             transform = owner->GetComponent<TransformComponent>();
-            interactionRect = {0, 0, transform->width, transform->height};
         }
     }
 
     void Update(float deltaTime) override {
-        interactionRect.x = static_cast<int>(transform->position.x) - Game::camera.x;
-        interactionRect.y = static_cast<int>(transform->position.y) - Game::camera.y;
-        interactionRect.w = transform->width * transform->scale;
-        interactionRect.h = transform->height * transform->scale;
-
+//        if (!specialSizeInteractionRect) {
+//            interactionRect.x = static_cast<int>(transform->position.x) - Game::camera.x;
+//            interactionRect.y = static_cast<int>(transform->position.y) - Game::camera.y;
+//            interactionRect.w = transform->width * transform->scale;
+//            interactionRect.h = transform->height * transform->scale;
+//        }
+            interactionRect.x = static_cast<int>(transform->position.x) - Game::camera.x;
+            interactionRect.y = static_cast<int>(transform->position.y) - Game::camera.y;
+            interactionRect.w = transform->width * transform->scale;
+            interactionRect.h = transform->height * transform->scale;
     }
 
     //just used for viewing the bounding boxes, can be removed later
     void Render() override {
-        //SDL_SetRenderDrawColor(Game::renderer, 0,255,0,255);
-        //SDL_RenderDrawRect(Game::renderer, &interactionRect);
+        SDL_SetRenderDrawColor(Game::renderer, 0,255,0,255);
+        SDL_RenderDrawRect(Game::renderer, &interactionRect);
     }
 
 };

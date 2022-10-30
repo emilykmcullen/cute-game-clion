@@ -37,6 +37,18 @@ public:
         }
     }
 
+    ~MovementScheduleComponent()
+    {
+        if (sprite)
+        {
+            delete sprite;
+        }
+        if (transform)
+        {
+            delete transform;
+        }
+    }
+
     void Initialize() override
     {
         transform = owner->GetComponent<TransformComponent>();
@@ -50,89 +62,91 @@ public:
             timeTracker += deltaTime;
         }
 
-        // We have been at the destination for enough time
-        if (timeTracker >= timeAtDestination)
+        if (!Game::suspendMovement)
         {
-            atDestination = false;
-            timeTracker = 0;
-
-            // Get next destination index
-            if ((indexOfCurrentDestination + 1) < destinations.size())
+            // We have been at the destination for enough time
+            if (timeTracker >= timeAtDestination)
             {
-                indexOfCurrentDestination += 1;
-            }
-            else
-            {
-                // Reset back to the start destination
-                indexOfCurrentDestination = 0;
-            }
-            // Set next destination
-            currentDestination = destinations.at(indexOfCurrentDestination);
-        }
-
-        if (!atDestination)
-        {
-            // Update the x/y direction velocity to move towards the destination
-            vec2 moveDirection = { currentDestination.x - transform->position.x, currentDestination.y - transform->position.y};
-            NormalizeVector(moveDirection);
-            transform->velocity.x = (moveDirection.x * 100);
-            transform->velocity.y = (moveDirection.y * 100);
-            // NEED TO CALCULATE WHICH SPRITE ANIMATION TO PLAY HERE
-            owner->IsMoving = true;
-            float absX = abs(moveDirection.x);
-            float absY = abs(moveDirection.y);
-            if (absX > absY || absX > 0.5 ) // if X dir is bigger than Y direction, OR if X direction is actually just high (more than 0.5 for now)
-            {
-                if (moveDirection.x >= 0)
-                {
-
-                    sprite->Play("RightAnimation");
-                }
-                else
-                {
-                    sprite->Play("LeftAnimation");
-                }
-            }
-            else
-            {
-                if (moveDirection.y >= 0)
-                {
-                    sprite->Play("DownAnimation");
-                }
-                else
-                {
-                    sprite->Play("UpAnimation");
-                }
-            }
-            // Have we reached the destination (or within +/- units of it)?
-            if (ReachedDestination(4))
-            {
-                atDestination = true;
-                owner->IsMoving = false;
+                atDestination = false;
                 timeTracker = 0;
 
-                if (transform->velocity.x > 0)
+                // Get next destination index
+                if ((indexOfCurrentDestination + 1) < destinations.size())
                 {
-                    sprite->Play("RightStationary");
-                }
-                else if (transform->velocity.x < 0)
-                {
-                    sprite->Play("LeftStationary");
-                }
-                else if (transform->velocity.y > 0)
-                {
-                    sprite->Play("DownStationary");
+                    indexOfCurrentDestination += 1;
                 }
                 else
                 {
-                    sprite->Play("UpStationary");
+                    // Reset back to the start destination
+                    indexOfCurrentDestination = 0;
                 }
+                // Set next destination
+                currentDestination = destinations.at(indexOfCurrentDestination);
+            }
 
-                transform->velocity.x = 0;
-                transform->velocity.y = 0;
+            if (!atDestination)
+            {
+                // Update the x/y direction velocity to move towards the destination
+                vec2 moveDirection = { currentDestination.x - transform->position.x, currentDestination.y - transform->position.y};
+                NormalizeVector(moveDirection);
+                transform->velocity.x = (moveDirection.x * 100);
+                transform->velocity.y = (moveDirection.y * 100);
+                // NEED TO CALCULATE WHICH SPRITE ANIMATION TO PLAY HERE
+                owner->IsMoving = true;
+                float absX = abs(moveDirection.x);
+                float absY = abs(moveDirection.y);
+                if (absX > absY || absX > 0.5 ) // if X dir is bigger than Y direction, OR if X direction is actually just high (more than 0.5 for now)
+                {
+                    if (moveDirection.x >= 0)
+                    {
+
+                        sprite->Play("RightAnimation");
+                    }
+                    else
+                    {
+                        sprite->Play("LeftAnimation");
+                    }
+                }
+                else
+                {
+                    if (moveDirection.y >= 0)
+                    {
+                        sprite->Play("DownAnimation");
+                    }
+                    else
+                    {
+                        sprite->Play("UpAnimation");
+                    }
+                }
+                // Have we reached the destination (or within +/- units of it)?
+                if (ReachedDestination(4))
+                {
+                    atDestination = true;
+                    owner->IsMoving = false;
+                    timeTracker = 0;
+
+                    if (transform->velocity.x > 0)
+                    {
+                        sprite->Play("RightStationary");
+                    }
+                    else if (transform->velocity.x < 0)
+                    {
+                        sprite->Play("LeftStationary");
+                    }
+                    else if (transform->velocity.y > 0)
+                    {
+                        sprite->Play("DownStationary");
+                    }
+                    else
+                    {
+                        sprite->Play("UpStationary");
+                    }
+
+                    transform->velocity.x = 0;
+                    transform->velocity.y = 0;
+                }
             }
         }
-
     }
 
     void Render() override

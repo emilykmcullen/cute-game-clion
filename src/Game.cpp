@@ -21,6 +21,7 @@ EntityManager manager;
 AssetManager* Game::assetManager = new AssetManager(&manager);
 Map* gameMap;
 int Game::scroll = 1;
+bool Game::suspendMovement = false;
 
 Game::Game(){
     this->isRunning =false;
@@ -153,6 +154,7 @@ void Game::LoadScene(int scenenum)
             // Add Transform Component
             sol::optional<sol::table> existsTransformComponent = entity["components"]["transform"];
             if (existsTransformComponent != sol::nullopt) {
+                bool isCentered = entity["components"]["transform"]["centered"];
                 newEntity.AddComponent<TransformComponent>(
                         static_cast<int>(entity["components"]["transform"]["position"]["x"]),
                         static_cast<int>(entity["components"]["transform"]["position"]["y"]),
@@ -160,7 +162,9 @@ void Game::LoadScene(int scenenum)
                         static_cast<int>(entity["components"]["transform"]["velocity"]["y"]),
                         static_cast<int>(entity["components"]["transform"]["width"]),
                         static_cast<int>(entity["components"]["transform"]["height"]),
-                        static_cast<int>(entity["components"]["transform"]["scale"])
+                        static_cast<int>(entity["components"]["transform"]["scale"]),
+                        isCentered
+
                 );
             }
 
@@ -257,13 +261,26 @@ void Game::LoadScene(int scenenum)
                     interactionType1 = InteractionType::DEACTIVATE;
                 }
                 std::string info = entity["components"]["interaction"]["info"];
-                newEntity.AddComponent<InteractionComponent>(interactionType1, info);
+                sol::optional<sol::table> existsRectComponent = entity["components"]["interaction"]["rect"];
+                if (existsRectComponent)
+                {
+                    int x = static_cast<int>(entity["components"]["interaction"]["rect"]["x"]);
+                    int y = static_cast<int>(entity["components"]["interaction"]["rect"]["y"]);
+                    int width = static_cast<int>(entity["components"]["interaction"]["rect"]["width"]);
+                    int height = static_cast<int>(entity["components"]["interaction"]["rect"]["height"]);
+                    newEntity.AddComponent<InteractionComponent>(interactionType1, info, x, y, width, height);
+                }
+                else
+                {
+                    newEntity.AddComponent<InteractionComponent>(interactionType1, info);
+                }
+
+
             }
         }
         entityIndex++;
     }
     mainPlayer = manager.GetEntityByName("player");
-    //manager.SetNonTileEntities();
 }
 
 void Game::ProcessInput(){
@@ -350,10 +367,11 @@ void Game::HandleCameraMovement() {
         {
             TransformComponent* mainPlayerTransform = mainPlayer->GetComponent<TransformComponent>();
             camera.x = mainPlayerTransform->position.x - (WINDOW_WIDTH / 2);
-            //std::cout << "CAMERA VALUES BEFORE CLAMPING" << std::endl;
-            //std::cout << "Camera.x: " << camera.x << ", camera.y: " << camera.y << std::endl;
-            //as soon as player reaches half of the window, only then the camera follows
             camera.y = mainPlayerTransform->position.y - (WINDOW_HEIGHT / 2);
+            std::cout << "CAMERA VALUES BEFORE CLAMPING" << std::endl;
+            std::cout << "Camera.x: " << camera.x << ", camera.y: " << camera.y << std::endl;
+            //as soon as player reaches half of the window, only then the camera follows
+
 
             //clamping camera values so doesnt go offscreen
             camera.x = camera.x < 0 ? 0 : camera.x;
@@ -361,8 +379,8 @@ void Game::HandleCameraMovement() {
             camera.x = camera.x > camera.w ? camera.w : camera.x;
             camera.y = camera.y > camera.h ? camera.h : camera.y;
 
-            //std::cout << "CAMERA VALUES AFTER CLAMPING" << std::endl;
-            //std::cout << "Camera.x: " << camera.x << ", camera.y: " << camera.y << std::endl;
+            std::cout << "CAMERA VALUES AFTER CLAMPING" << std::endl;
+            std::cout << "Camera.x: " << camera.x << ", camera.y: " << camera.y << std::endl;
         }
         else
         {
@@ -398,10 +416,12 @@ void Game::HandleInteraction(interaction interaction)
     {
         Entity* entity = manager.GetEntityByName(interaction.info);
         entity->Activate();
+        suspendMovement = true;
     }
     else if (interaction.interactionType == InteractionType::DEACTIVATE)
     {
         manager.GetEntityByName(interaction.info)->Deactivate();
+        suspendMovement = false;
     }
 
 }

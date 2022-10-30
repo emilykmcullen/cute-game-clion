@@ -30,6 +30,18 @@ public:
         this->shootKey = GetSDLKeyStringCode(shootKey);
     }
 
+    ~KeyboardControlComponent()
+    {
+        if (sprite)
+        {
+            delete sprite;
+        }
+        if (transform)
+        {
+            delete transform;
+        }
+    }
+
     std::string GetSDLKeyStringCode(std::string key){
         //return values are the keys for these keys in SDL
         if (key.compare("up") == 0) return "1073741906";
@@ -47,56 +59,59 @@ public:
     }
 
     void Update(float deltaTime) override {
-        if(Game::event.type == SDL_KEYDOWN){
-            std::string keyCode = std::to_string(Game::event.key.keysym.sym);
-
-            if (keyCode.compare(upKey)==0){
-                upKeyPressed = true;
-            }
-            if (keyCode.compare(rightKey)==0){
-                rightKeyPressed = true;
-            }
-            if (keyCode.compare(downKey)==0){
-                downKeyPressed = true;
-            }
-            if (keyCode.compare(leftKey)==0){
-                leftKeyPressed = true;
-            }
-            if (keyCode.compare(shootKey)==0){
-                // to do
-            }
-        }
-        if (Game::event.type == SDL_KEYUP){
-            std::string keyCode = std::to_string(Game::event.key.keysym.sym);
-
-            if (keyCode.compare(upKey)==0){
-                upKeyPressed = false;
-                transform->velocity.y = 0;
-            }
-            if (keyCode.compare(rightKey)==0){
-                rightKeyPressed = false;
-                transform->velocity.x=0;
-            }
-            if (keyCode.compare(downKey)==0){
-                downKeyPressed = false;
-                transform->velocity.y=0;
-            }
-            if (keyCode.compare(leftKey)==0){
-                leftKeyPressed = false;
-                transform->velocity.x=0;
-            }
-
-        }
-
-        if (upKeyPressed || downKeyPressed || rightKeyPressed || leftKeyPressed)
+        if (!Game::suspendMovement)
         {
-            owner->IsMoving = true;
+            if(Game::event.type == SDL_KEYDOWN){
+                std::string keyCode = std::to_string(Game::event.key.keysym.sym);
+
+                if (keyCode.compare(upKey)==0){
+                    upKeyPressed = true;
+                }
+                if (keyCode.compare(rightKey)==0){
+                    rightKeyPressed = true;
+                }
+                if (keyCode.compare(downKey)==0){
+                    downKeyPressed = true;
+                }
+                if (keyCode.compare(leftKey)==0){
+                    leftKeyPressed = true;
+                }
+                if (keyCode.compare(shootKey)==0){
+                    // to do
+                }
+            }
+            if (Game::event.type == SDL_KEYUP){
+                std::string keyCode = std::to_string(Game::event.key.keysym.sym);
+
+                if (keyCode.compare(upKey)==0){
+                    upKeyPressed = false;
+                    transform->velocity.y = 0;
+                }
+                if (keyCode.compare(rightKey)==0){
+                    rightKeyPressed = false;
+                    transform->velocity.x=0;
+                }
+                if (keyCode.compare(downKey)==0){
+                    downKeyPressed = false;
+                    transform->velocity.y=0;
+                }
+                if (keyCode.compare(leftKey)==0){
+                    leftKeyPressed = false;
+                    transform->velocity.x=0;
+                }
+
+            }
+
+            if (upKeyPressed || downKeyPressed || rightKeyPressed || leftKeyPressed)
+            {
+                owner->IsMoving = true;
+            }
+            else
+            {
+                owner->IsMoving = false;
+            }
+            SetMovement();
         }
-        else
-        {
-            owner->IsMoving = false;
-        }
-        SetMovement();
     }
 
     void SetMovement()

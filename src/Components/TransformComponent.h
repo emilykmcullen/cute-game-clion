@@ -11,13 +11,15 @@ public:
     int width;
     int height;
     int scale;
+    bool isCentered;
 
-    TransformComponent(float posX, float posY, float velX, float velY, int w, int h, int s){
+    TransformComponent(float posX, float posY, float velX, float velY, int w, int h, int s, bool isCentered){
         position = vec2{posX, posY};
         velocity = vec2{velX, velY};
         width = w;
         height = h;
         scale = s;
+        this->isCentered = isCentered;
     }
 
     void Initialize() override {
@@ -53,49 +55,59 @@ public:
         {
             rect.y += velocity.y * deltaTime;
         }
-//        rect.x -= Game::camera.x;
-//        rect.y -= Game::camera.y;
+
         return rect;
     }
 
     void Update(float deltaTime) override
     {
-        // Reset position is used for collisions,
-        // If we are going to collide with something we set reset position to true
-        // So that we avoid moving it this frame
-        if (!owner->resetPosition)
+
+
+        if (!Game::suspendMovement)
         {
-            // Clamp to right edge of map
-            if ((position.x + (velocity.x * deltaTime)) > (WINDOW_WIDTH * Game::scroll) - (width * scale))
+            // Is centered for when we want the sprite to appear in the centre of the screen at all times
+            if (isCentered)
             {
-                position.x = (WINDOW_WIDTH * Game::scroll) - (width * scale);
-            }
-                // Clamp to left edge
-            else if ((position.x + (velocity.x * deltaTime)) < 0)
-            {
-                position.x = 0;
-            }
-            else
-            {
-                position.x += velocity.x * deltaTime;
+                position.x = Game::camera.x + ((WINDOW_WIDTH - (width * scale)))/2;
+                position.y = Game::camera.y + ((WINDOW_HEIGHT - (height * scale)))/2;
             }
 
-            // Clamp to bottom of map
-            if ((position.y + (velocity.y * deltaTime)) > (WINDOW_HEIGHT * Game::scroll) - (height * scale))
+            // Reset position is used for collisions,
+            // If we are going to collide with something we set reset position to true
+            // So that we avoid moving it this frame
+            else if (!owner->resetPosition)
             {
-                position.y = (WINDOW_HEIGHT* Game::scroll) - (height * scale);
+                // Clamp to right edge of map
+                if ((position.x + (velocity.x * deltaTime)) > (WINDOW_WIDTH * Game::scroll) - (width * scale))
+                {
+                    position.x = (WINDOW_WIDTH * Game::scroll) - (width * scale);
+                }
+                    // Clamp to left edge
+                else if ((position.x + (velocity.x * deltaTime)) < 0)
+                {
+                    position.x = 0;
+                }
+                else
+                {
+                    position.x += velocity.x * deltaTime;
+                }
+
+                // Clamp to bottom of map
+                if ((position.y + (velocity.y * deltaTime)) > (WINDOW_HEIGHT * Game::scroll) - (height * scale))
+                {
+                    position.y = (WINDOW_HEIGHT* Game::scroll) - (height * scale);
+                }
+                else if ((position.y + (velocity.y * deltaTime)) < 0)
+                {
+                    position.y = 0;
+                }
+                else
+                {
+                    position.y += velocity.y * deltaTime;
+                }
             }
-            else if ((position.y + (velocity.y * deltaTime)) < 0)
-            {
-                position.y = 0;
-            }
-            else
-            {
-                position.y += velocity.y * deltaTime;
-            }
+            owner->resetPosition = false;
         }
-        owner->resetPosition = false;
-
     }
 
     void Render() override {

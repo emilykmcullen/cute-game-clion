@@ -45,7 +45,7 @@ Scene1 = {
                     width = 96,
                     height = 64,
                     scale = 2,
-                    rotation = 0
+                    centered = false
                 },
                 sprite = {
                     textureAssetId = "player-texture",
@@ -87,7 +87,7 @@ Scene1 = {
                     width = 48,
                     height = 32,
                     scale = 4,
-                    rotation = 0
+                    centered = false
                 },
                 sprite = {
                     textureAssetId = "spotty-dog",
@@ -133,7 +133,7 @@ Scene1 = {
                             width = 96,
                             height = 96,
                             scale = 4,
-                            rotation = 0
+                            centered = false
                         },
                         sprite = {
                             textureAssetId = "house",
@@ -155,7 +155,7 @@ Scene1 = {
                 -- end of this particular entity
         [3] = {
                     name = "hello",
-                    layer = 3,
+                    layer = 4,
                     isActive = false,
                     components = {
                         transform = {
@@ -170,7 +170,7 @@ Scene1 = {
                             width = 600,
                             height = 300,
                             scale = 1,
-                            rotation = 0
+                            centered = true
                         },
                         sprite = {
                             textureAssetId = "hello",
@@ -179,11 +179,18 @@ Scene1 = {
                             frameCount = 1,
                             animationSpeed = 90,
                             hasDirections = false,
-                            fixed = false
+                            fixed = true
                         },
                         interaction = {
                                         interactiontype = "deactivate",
-                                        info = "hello"
+                                        info = "hello",
+                                        rect = {
+                                                x = 0,
+                                                y = 0,
+                                                width = 1280,
+                                                height = 640
+                                        }
+
                                     }
 
                     }
