@@ -23,6 +23,12 @@ enum InteractionType {
     DEACTIVATE = 3
 };
 
+enum CursorType {
+    REGULAR = 0,
+    LARGE = 1,
+    LARGE_GREY = 2
+};
+
 
 enum CollisionType {
     NO_COLLISION,

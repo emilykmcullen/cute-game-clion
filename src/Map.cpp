@@ -30,7 +30,12 @@ void Map::LoadMap(std::string filePath, int mapSizeX, int mapSizeY){
             int sourceRectY = atoi(&ch) * tileSize;
             mapFile.get(ch);
             int sourceRectX = atoi(&ch) * tileSize;
+            //std::cout << "x: " << x << ", y: " << y << std::endl;
             AddTile(sourceRectX, sourceRectY, x * (scale * tileSize), y * (scale * tileSize));
+            //std::cout << "SOURCE X: " << sourceRectX << ", SOURCE Y: " << sourceRectY << std::endl;
+            int b = x * scale * tileSize;
+            int c = y * scale * tileSize;
+            //std::cout << "DEST X: " << b << ", DEST Y: " << c << std::endl;
             mapFile.ignore();
         }
     }

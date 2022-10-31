@@ -176,7 +176,8 @@ interaction EntityManager::CheckIfClickedOnEntity(Sint32 x, Sint32 y)
                 int playerY = (int)playerTransform->position.y - Game::camera.y;
                 SDL_Rect playerRect = { playerX, playerY,  playerTransform->width * playerTransform->scale, playerTransform->height * playerTransform->scale };
                 // Is the interactable entity near enough to the player?
-                if (Collision::CheckRectangleCollisionWithinAllowance(playerRect, interactionComponent->interactionRect, 5))
+                int clickAllowance = interactionComponent->clickAllowance;
+                if (clickAllowance == -1 || Collision::CheckRectangleCollisionWithinAllowance(playerRect, interactionComponent->interactionRect, clickAllowance))
                 {
                     if (trackedEntity == nullptr)
                     {
@@ -200,4 +201,39 @@ interaction EntityManager::CheckIfClickedOnEntity(Sint32 x, Sint32 y)
         InteractionComponent* interactionComponent = trackedEntity->GetComponent<InteractionComponent>();
         return interactionComponent->GetInteraction();
     }
+}
+
+CursorType EntityManager::IsCursorOverInteractionRect(Sint32 x, Sint32 y)
+{
+    std::vector<Entity*> nonTileEntities = GetNonTileEntities();
+    for (int i = 0; i < nonTileEntities.size(); i++)
+    {
+        //TO DO: BETTER WAY TO DO THIS RATHER THAN GETTING THE NON-TILE ENTITIES EVERY FRAME?
+        Entity* entity = nonTileEntities[i];
+        if (entity->HasComponent<InteractionComponent>() && entity->IsActive())
+        {
+            InteractionComponent* interactionComponent = entity->GetComponent<InteractionComponent>();
+            // Check if click is in bounds of collider
+            if (x > interactionComponent->interactionRect.x &&
+                x < interactionComponent->interactionRect.x + interactionComponent->interactionRect.w &&
+                y > interactionComponent->interactionRect.y &&
+                y < interactionComponent->interactionRect.y + interactionComponent->interactionRect.h)
+            {
+                Entity* player = GetEntityByName("player");
+                TransformComponent* playerTransform = player->GetComponent<TransformComponent>();
+                int playerX = (int)playerTransform->position.x - Game::camera.x;
+                int playerY = (int)playerTransform->position.y - Game::camera.y;
+                SDL_Rect playerRect = { playerX, playerY,  playerTransform->width * playerTransform->scale, playerTransform->height * playerTransform->scale };
+                // Is the interactable entity near enough to the player?
+                int clickAllowance = interactionComponent->clickAllowance;
+
+                if (clickAllowance == -1 || Collision::CheckRectangleCollisionWithinAllowance(playerRect, interactionComponent->interactionRect, clickAllowance))
+                {
+                    return CursorType::LARGE;
+                }
+                return CursorType::LARGE_GREY;
+            }
+        }
+    }
+    return CursorType::REGULAR;
 }

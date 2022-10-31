@@ -16,6 +16,9 @@
 SDL_Renderer* Game::renderer;
 SDL_Event Game::event;
 SDL_Rect Game::camera = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
+SDL_Cursor *cursor = NULL;
+SDL_Cursor *cursorlarge = NULL;
+SDL_Cursor *cursorlargegrey = NULL;
 Entity* mainPlayer = NULL;
 EntityManager manager;
 AssetManager* Game::assetManager = new AssetManager(&manager);
@@ -56,26 +59,44 @@ void Game::Initialize(int width, int height) {
         std::cerr << "Error creating SDL window." << std::endl;
         return;
     }
-    renderer = SDL_CreateRenderer(window, -1, 0);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
     if(!renderer){
         std::cerr << "Error creating SDL renderer." << std::endl;
         return;
     }
 
-    isRunning = true;
+    InitializeCursors();
 
+    isRunning = true;
 
     LoadScene(1);
 
-    //std::cout << "PLAYER POS: " << mainPlayer->GetComponent<TransformComponent>()->position.x << std::endl;
-    //std::cout << "PLAYER POS: " << mainPlayer->GetComponent<TransformComponent>()->position.y << std::endl;
+    manager.ListAllEntities();
 
     return;
 }
 
+void Game::InitializeCursors()
+{
+    // Regular cursor
+    SDL_Surface* surface = IMG_Load("../../assets/cursor.png");
+    cursor = SDL_CreateColorCursor(surface, 0, 0);
+    SDL_SetCursor(cursor);
+    SDL_FreeSurface(surface);
+
+    // Large cursor
+    SDL_Surface* surfacelarge = IMG_Load("../../assets/cursorlarge.png");
+    cursorlarge = SDL_CreateColorCursor(surfacelarge, 0, 0);
+    SDL_FreeSurface(surfacelarge);
+
+    // Large greyed out cursor
+    SDL_Surface* surfacelargegrey = IMG_Load("../../assets/cursorlargegrey.png");
+    cursorlargegrey = SDL_CreateColorCursor(surfacelargegrey, 0, 0);
+    SDL_FreeSurface(surfacelargegrey);
+}
+
 void Game::LoadScene(int scenenum)
 {
-
     sol::state lua;
     lua.open_libraries(sol::lib::base, sol::lib::os, sol::lib::math);
     //these libraries are now available to me
@@ -261,6 +282,7 @@ void Game::LoadScene(int scenenum)
                     interactionType1 = InteractionType::DEACTIVATE;
                 }
                 std::string info = entity["components"]["interaction"]["info"];
+                int clickAllowance = entity["components"]["interaction"]["clickAllowance"];
                 sol::optional<sol::table> existsRectComponent = entity["components"]["interaction"]["rect"];
                 if (existsRectComponent)
                 {
@@ -268,11 +290,11 @@ void Game::LoadScene(int scenenum)
                     int y = static_cast<int>(entity["components"]["interaction"]["rect"]["y"]);
                     int width = static_cast<int>(entity["components"]["interaction"]["rect"]["width"]);
                     int height = static_cast<int>(entity["components"]["interaction"]["rect"]["height"]);
-                    newEntity.AddComponent<InteractionComponent>(interactionType1, info, x, y, width, height);
+                    newEntity.AddComponent<InteractionComponent>(interactionType1, info, x, y, width, height, clickAllowance);
                 }
                 else
                 {
-                    newEntity.AddComponent<InteractionComponent>(interactionType1, info);
+                    newEntity.AddComponent<InteractionComponent>(interactionType1, info, clickAllowance);
                 }
 
 
@@ -325,11 +347,13 @@ void Game::Update(){
     deltaTime = (deltaTime > 0.05f) ? 0.05f : deltaTime;
 
     //fps
-    float avgFPS = frameCount / (( SDL_GetTicks() - ticksLastFrame)/ 1000.f );
-    if (avgFPS < 50)
-    {
-        //std::cout << "FPS: " << avgFPS << std::endl;
-    }
+//    float avgFPS = frameCount / (( SDL_GetTicks() - ticksLastFrame)/ 1000.f );
+//    if (avgFPS < 60)
+//    {
+//        std::cout << "FPS: " << avgFPS << std::endl;
+//    }
+
+    UpdateCursor();
 
     manager.Update(deltaTime);
 
@@ -343,6 +367,27 @@ void Game::Update(){
 
 }
 
+void Game::UpdateCursor()
+{
+    int x, y;
+    Uint32 buttons;
+    //SDL_PumpEvents();  // make sure we have the latest mouse state.
+    buttons = SDL_GetMouseState(&x, &y);
+    CursorType cursorType = manager.IsCursorOverInteractionRect(x,y);
+    if (cursorType == CursorType::LARGE)
+    {
+        SDL_SetCursor(cursorlarge);
+    }
+    else if (cursorType == CursorType::REGULAR)
+    {
+        SDL_SetCursor(cursor);
+    }
+    else
+    {
+        SDL_SetCursor(cursorlargegrey);
+    }
+}
+
 void Game::Render(){
     SDL_SetRenderDrawColor(renderer, 21, 21,21 , 255);
     SDL_RenderClear(renderer);
@@ -352,7 +397,6 @@ void Game::Render(){
     //}
     manager.Render();
 
-//    RenderColorBuffer();
     SDL_RenderPresent(renderer);
     ++frameCount;
 }
@@ -368,8 +412,8 @@ void Game::HandleCameraMovement() {
             TransformComponent* mainPlayerTransform = mainPlayer->GetComponent<TransformComponent>();
             camera.x = mainPlayerTransform->position.x - (WINDOW_WIDTH / 2);
             camera.y = mainPlayerTransform->position.y - (WINDOW_HEIGHT / 2);
-            std::cout << "CAMERA VALUES BEFORE CLAMPING" << std::endl;
-            std::cout << "Camera.x: " << camera.x << ", camera.y: " << camera.y << std::endl;
+            //std::cout << "CAMERA VALUES BEFORE CLAMPING" << std::endl;
+            //std::cout << "Camera.x: " << camera.x << ", camera.y: " << camera.y << std::endl;
             //as soon as player reaches half of the window, only then the camera follows
 
 
@@ -379,8 +423,8 @@ void Game::HandleCameraMovement() {
             camera.x = camera.x > camera.w ? camera.w : camera.x;
             camera.y = camera.y > camera.h ? camera.h : camera.y;
 
-            std::cout << "CAMERA VALUES AFTER CLAMPING" << std::endl;
-            std::cout << "Camera.x: " << camera.x << ", camera.y: " << camera.y << std::endl;
+            //std::cout << "CAMERA VALUES AFTER CLAMPING" << std::endl;
+            //std::cout << "Camera.x: " << camera.x << ", camera.y: " << camera.y << std::endl;
         }
         else
         {

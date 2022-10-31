@@ -17,6 +17,8 @@ private:
     int frameCount = 0;
 
     void LoadScene(int scenenum);
+    void InitializeCursors();
+    void UpdateCursor();
 
 
 

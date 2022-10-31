@@ -16,18 +16,21 @@ public:
     interaction interactionobj;
     SDL_Rect interactionRect;
     TransformComponent* transform = nullptr;
+    int clickAllowance = -1;
 
-    InteractionComponent(InteractionType interaction, std::string info, int x, int y, int width, int height)
+    InteractionComponent(InteractionType interaction, std::string info, int x, int y, int width, int height, int clickAllowance)
     {
         this->interactionobj.interactionType = interaction;
         this->interactionobj.info = info;
         this->interactionRect = { x, y, width, height };
+        this->clickAllowance = clickAllowance;
     }
 
-    InteractionComponent(InteractionType interaction, std::string info)
+    InteractionComponent(InteractionType interaction, std::string info, int clickAllowance)
     {
         this->interactionobj.interactionType = interaction;
         this->interactionobj.info = info;
+        this->clickAllowance = clickAllowance;
     }
 
     ~InteractionComponent()

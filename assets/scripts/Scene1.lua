@@ -4,12 +4,14 @@ Scene1 = {
     -- Table to define the list of assets
     ----------------------------------------------------
     assets = {
-        [0] = { type="texture", id = "landscape-texture", file = "../../assets/test-landscape.png" },
-        [1] = { type="texture", id = "player-texture", file = "../../assets/monsterspritesheet.png" },
-        [2] = { type="texture", id = "spotty-dog", file = "../../assets/spottydog.png" },
-        [3] = { type="texture", id = "bw-landscape", file = "../../assets/blackandwhitelandscape.png" },
+        [0] = { type="texture", id = "landscape-texture", file = "../../assets/backgrounds/test-landscape.png" },
+        [1] = { type="texture", id = "player-texture", file = "../../assets/character-spritesheets/monsterspritesheet.png" },
+        [2] = { type="texture", id = "spotty-dog", file = "../../assets/character-spritesheets/spottydog.png" },
+        [3] = { type="texture", id = "bw-landscape", file = "../../assets/backgrounds/blackandwhitelandscape.png" },
         [4] = { type="texture", id = "house", file = "../../assets/house.png" },
-        [5] = { type="texture", id = "hello", file = "../../assets/hello.png" }
+        [5] = { type="texture", id = "hello", file = "../../assets/hello.png" },
+        [6] = { type="texture", id = "forest", file = "../../assets/backgrounds/halfforest.png" },
+        [7] = { type="texture", id = "pigeon", file = "../../assets/character-spritesheets/pigeon.png" }
 
     },
     ----------------------------------------------------
@@ -17,7 +19,7 @@ Scene1 = {
     ----------------------------------------------------
     map = {
         textureAssetId = "bw-landscape",
-        file = "../../assets/landscape.map",
+        file = "../../assets/mapfiles/landscape.map",
         scale = 4,
         tileSize = 32,
         mapSizeX = 20,
@@ -110,7 +112,8 @@ Scene1 = {
                 },
                 interaction = {
                                 interactiontype = "speak",
-                                info = "hello"
+                                info = "hello",
+                                clickAllowance = 5
                             }
             }
             --end of components
@@ -147,7 +150,9 @@ Scene1 = {
                         collider = { tag = "OBSTACLE" },
                         interaction = {
                             interactiontype = "loadscene",
-                            info = "2"
+                            info = "2",
+                            clickAllowance = 5
+
                         }
                     }
                     --end of components
@@ -189,13 +194,55 @@ Scene1 = {
                                                 y = 0,
                                                 width = 1280,
                                                 height = 640
-                                        }
+                                        },
+                                        clickAllowance = -1
+
 
                                     }
 
                     }
                     --end of components
                 },
+                -- end of this particular entity
+        [4] = {
+                    name = "pigeon",
+                    layer = 3,
+                    isActive = true,
+                    components = {
+                        transform = {
+                            position = {
+                                x = 100,
+                                y = 300
+                            },
+                            velocity = {
+                                x = 0,
+                                y = 0
+                            },
+                            width = 96,
+                            height = 64,
+                            scale = 2,
+                            centered = false
+                        },
+                        sprite = {
+                            textureAssetId = "pigeon",
+                            animated = true,
+                            animatedWhileNotMoving = true,
+                            frameCount = 4,
+                            animationSpeed = 180,
+                            hasDirections = true,
+                            fixed = false
+                        },
+                        movementschedule = {
+                                                destinations = {
+                                                                    [0] = { x = 100, y = 300},
+                                                                    [1] = { x = 100, y = 100},
+                                                                    [2] = { x = 100, y = 1000}
+                                                                },
+                                                timeAtDestination = 5
+                                        }
+                    }
+                    --end of components
+                }
                 -- end of this particular entity
     }
     --end of entities

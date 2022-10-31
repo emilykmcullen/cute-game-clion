@@ -22,7 +22,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMAKE")
 #include_directories(src/Components)
 
 
-set(SOURCE_FILES src/main.cpp src/Game.cpp src/Scene.cpp src/Player.cpp src/Utils.cpp src/Entity.cpp src/EntityManager.cpp src/TextureManager.cpp src/Animation.cpp src/AssetManager.cpp src/Map.cpp lua/sol.hpp src/Collision.cpp src/Collision.h src/Components/MovementScheduleComponent.h)
+set(SOURCE_FILES src/main.cpp src/Game.cpp src/Utils.cpp src/Entity.cpp src/EntityManager.cpp src/TextureManager.cpp src/Animation.cpp src/AssetManager.cpp src/Map.cpp lua/sol.hpp src/Collision.cpp src/Collision.h src/Components/MovementScheduleComponent.h)
 
 Message("")
 Message( STATUS "SOURCE entry point : " ${SOURCE_FILES} )

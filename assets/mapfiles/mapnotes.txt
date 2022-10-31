@@ -36,3 +36,13 @@ NOTES
 -----
 1. Remember to adjust mapsize accordingly when adjusting the scale of the tiles!!
 
+
+PNGS
+----
+For my background image that I get the tiles from:
+0-9 are the tiles on the top row
+10-19 are the tiles on the row below that
+20=29 on the row below that, and so on
+so I must make my images sizes accordingly.
+Eg. if my tiles are gonna be size 32, my background should have a canvas of width 320
+(it doesn't matter as much the height)

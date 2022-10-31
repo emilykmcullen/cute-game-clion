@@ -4,11 +4,8 @@ Scene2 = {
     -- Table to define the list of assets
     ----------------------------------------------------
     assets = {
-        [0] = { type="texture", id = "landscape-texture", file = "../../assets/test-landscape.png" },
-        [1] = { type="texture", id = "player-texture", file = "../../assets/monsterspritesheet.png" },
-        [2] = { type="texture", id = "spotty-dog", file = "../../assets/spottydog.png" },
-        [3] = { type="texture", id = "bw-landscape", file = "../../assets/blackandwhitelandscape.png" },
-        [4] = { type="texture", id = "school", file = "../../assets/school.png" }
+        [0] = { type="texture", id = "player-texture", file = "../../assets/character-spritesheets/monsterspritesheet.png" },
+        [1] = { type="texture", id = "school", file = "../../assets/backgrounds/school.png" }
 
     },
     ----------------------------------------------------
@@ -16,7 +13,7 @@ Scene2 = {
     ----------------------------------------------------
     map = {
         textureAssetId = "school",
-        file = "../../assets/school.map",
+        file = "../../assets/mapfiles/school.map",
         scale = 1,
         tileSize = 1280,
         mapSizeX = 1,
