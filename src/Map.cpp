@@ -3,6 +3,7 @@
 #include "./EntityManager.h"
 #include <fstream>
 #include "./Components/TileComponent.h"
+#include "Utils.h"
 
 extern EntityManager manager;
 
@@ -27,16 +28,29 @@ void Map::LoadMap(std::string filePath, int mapSizeX, int mapSizeY){
             //eg. if ch is '01' convert 1
             // sourceRectY = 1 * tilesize (32)
             // sourceRectY = 32
-            int sourceRectY = atoi(&ch) * tileSize;
+            char nullterminatedChar1[2] = { ch, '\0'};
+            int atoiY = atoi(nullterminatedChar1);
+            int sourceRectY = atoiY * tileSize;
+
+
             mapFile.get(ch);
-            int sourceRectX = atoi(&ch) * tileSize;
-            //std::cout << "x: " << x << ", y: " << y << std::endl;
+            char nullterminatedChar2[2] = { ch, '\0'};
+            int atoiX = atoi(nullterminatedChar2);
+            int sourceRectX = atoiX * tileSize;
+
+
             AddTile(sourceRectX, sourceRectY, x * (scale * tileSize), y * (scale * tileSize));
-            //std::cout << "SOURCE X: " << sourceRectX << ", SOURCE Y: " << sourceRectY << std::endl;
             int b = x * scale * tileSize;
             int c = y * scale * tileSize;
-            //std::cout << "DEST X: " << b << ", DEST Y: " << c << std::endl;
+
+            // Ignore the comma
             mapFile.ignore();
+
+            //Ignore the null terminator at the end of each line
+            if (x == mapSizeX - 1)
+            {
+                mapFile.ignore();
+            }
         }
     }
     mapFile.close();

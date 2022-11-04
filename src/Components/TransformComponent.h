@@ -62,7 +62,6 @@ public:
     void Update(float deltaTime) override
     {
 
-
         if (!Game::suspendMovement)
         {
             // Is centered for when we want the sprite to appear in the centre of the screen at all times

@@ -28,3 +28,4 @@ void NormalizeVector(vec2& vector)
     }
     vector = { (vector.x)/magnitude, (vector.y)/magnitude};
 }
+

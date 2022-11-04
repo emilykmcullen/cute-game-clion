@@ -139,6 +139,8 @@ void Game::LoadScene(int scenenum)
     std::string mapFile = levelMap["file"];
     std::cout << "MAPTEXID: " << mapTextureId << std::endl;
     scroll = levelMap["scroll"];
+    camera.w = WINDOW_WIDTH * scroll;
+    camera.h = WINDOW_HEIGHT * scroll;
 
     gameMap = new Map(
             mapTextureId,
@@ -420,11 +422,14 @@ void Game::HandleCameraMovement() {
             //clamping camera values so doesnt go offscreen
             camera.x = camera.x < 0 ? 0 : camera.x;
             camera.y = camera.y < 0 ? 0 : camera.y;
-            camera.x = camera.x > camera.w ? camera.w : camera.x;
-            camera.y = camera.y > camera.h ? camera.h : camera.y;
+            camera.x = camera.x > camera.w - (camera.w/Game::scroll) ? camera.w - (camera.w/Game::scroll): camera.x;
+            camera.y = camera.y > camera.h - (camera.h/Game::scroll) ? camera.h - (camera.h/Game::scroll) : camera.y;
 
             //std::cout << "CAMERA VALUES AFTER CLAMPING" << std::endl;
             //std::cout << "Camera.x: " << camera.x << ", camera.y: " << camera.y << std::endl;
+
+            //std::cout << "CAMERA WIDTH: " << camera.w << std::endl;
+            //std::cout << "CAMERA HEIGHT: " << camera.h << std::endl;
         }
         else
         {
