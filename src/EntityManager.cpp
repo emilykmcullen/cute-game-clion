@@ -20,6 +20,7 @@ bool EntityManager::HasNoEntities(){
 }
 
 void EntityManager::Update(float deltaTime){
+    RearrangeObstacleLayers();
     for (auto& entity: entities){
         if (entity->IsActive())
         {
@@ -55,6 +56,28 @@ void EntityManager::Render(){
             {
                 entity->Render();
             }
+        }
+    }
+}
+
+// So that we render the obstacles in the correct order depending on their position relative to the player
+void EntityManager::RearrangeObstacleLayers()
+{
+    Entity* player = GetEntityByName("player");
+    for (auto& entity: GetEntitiesByLayer(static_cast<LayerType>(3)))
+    {
+        // If the player is below the obstacle, the obstacle should be behind the player
+        if (player->GetComponent<TransformComponent>()->position.y > entity->GetComponent<TransformComponent>()->position.y)
+        {
+            entity->layer = static_cast<LayerType>(1);
+        }
+    }
+    for (auto& entity: GetEntitiesByLayer(static_cast<LayerType>(1)))
+    {
+        // If the player is above the obstacle, the obstacle should be infront of the player
+        if (player->GetComponent<TransformComponent>()->position.y < entity->GetComponent<TransformComponent>()->position.y)
+        {
+            entity->layer = static_cast<LayerType>(3);
         }
     }
 }

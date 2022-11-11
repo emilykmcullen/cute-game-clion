@@ -30,27 +30,29 @@ void Map::LoadMap(std::string filePath, int mapSizeX, int mapSizeY){
             // sourceRectY = 32
             char nullterminatedChar1[2] = { ch, '\0'};
             int atoiY = atoi(nullterminatedChar1);
+            std::cout << "ATOIY: " << atoiY << std::endl;
             int sourceRectY = atoiY * tileSize;
 
 
             mapFile.get(ch);
             char nullterminatedChar2[2] = { ch, '\0'};
             int atoiX = atoi(nullterminatedChar2);
+            std::cout << "ATOIX: " << atoiX << std::endl;
             int sourceRectX = atoiX * tileSize;
 
 
+            std::cout << "x: " << x << ", y: " << y << std::endl;
             AddTile(sourceRectX, sourceRectY, x * (scale * tileSize), y * (scale * tileSize));
+            std::cout << "SOURCE X: " << sourceRectX << ", SOURCE Y: " << sourceRectY << std::endl;
             int b = x * scale * tileSize;
             int c = y * scale * tileSize;
-
-            // Ignore the comma
+            std::cout << "DEST X: " << b << ", DEST Y: " << c << std::endl;
+            std::cout << "--------------------------------" << std::endl;
+            std::cout << " " << std::endl;
+            // Ignore the comma OR ignore the new line char at the end of each line
             mapFile.ignore();
 
-            //Ignore the null terminator at the end of each line
-            if (x == mapSizeX - 1)
-            {
-                mapFile.ignore();
-            }
+
         }
     }
     mapFile.close();

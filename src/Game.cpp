@@ -229,13 +229,30 @@ void Game::LoadScene(int scenenum)
             sol::optional<sol::table> existsColliderComponent = entity["components"]["collider"];
             if (existsColliderComponent != sol::nullopt) {
                 std::string colliderTag = entity["components"]["collider"]["tag"];
-                newEntity.AddComponent<ColliderComponent>(
-                        colliderTag,
-                        static_cast<int>(entity["components"]["transform"]["position"]["x"]),
-                        static_cast<int>(entity["components"]["transform"]["position"]["y"]),
-                        static_cast<int>(entity["components"]["transform"]["width"]),
-                        static_cast<int>(entity["components"]["transform"]["height"])
-                );
+                bool isSpecialSize = entity["components"]["collider"]["specialSize"];
+                if (isSpecialSize)
+                {
+                    newEntity.AddComponent<ColliderComponent>(
+                            colliderTag,
+                            static_cast<int>(entity["components"]["collider"]["x"]),
+                            static_cast<int>(entity["components"]["collider"]["y"]),
+                            static_cast<int>(entity["components"]["collider"]["width"]),
+                            static_cast<int>(entity["components"]["collider"]["height"]),
+                            static_cast<int>(entity["components"]["transform"]["scale"])
+                    );
+                }
+                else
+                {
+                    newEntity.AddComponent<ColliderComponent>(
+                            colliderTag,
+                            static_cast<int>(entity["components"]["transform"]["position"]["x"]),
+                            static_cast<int>(entity["components"]["transform"]["position"]["y"]),
+                            static_cast<int>(entity["components"]["transform"]["width"]),
+                            static_cast<int>(entity["components"]["transform"]["height"]),
+                            static_cast<int>(entity["components"]["transform"]["scale"])
+                    );
+                }
+
             }
 
             // Add MovementScheduleComponent
@@ -364,8 +381,6 @@ void Game::Update(){
     frameCount = 0;
     //Sets the new ticks for the current frame to be used in the next pass
     ticksLastFrame = SDL_GetTicks();
-    //std::cout << "PLAYER POS: " << mainPlayer->GetComponent<TransformComponent>()->position.x << std::endl;
-    //std::cout << "PLAYER POS: " << mainPlayer->GetComponent<TransformComponent>()->position.y << std::endl;
 
 }
 
@@ -414,22 +429,14 @@ void Game::HandleCameraMovement() {
             TransformComponent* mainPlayerTransform = mainPlayer->GetComponent<TransformComponent>();
             camera.x = mainPlayerTransform->position.x - (WINDOW_WIDTH / 2);
             camera.y = mainPlayerTransform->position.y - (WINDOW_HEIGHT / 2);
-            //std::cout << "CAMERA VALUES BEFORE CLAMPING" << std::endl;
-            //std::cout << "Camera.x: " << camera.x << ", camera.y: " << camera.y << std::endl;
-            //as soon as player reaches half of the window, only then the camera follows
 
+            //as soon as player reaches half of the window, only then the camera follows
 
             //clamping camera values so doesnt go offscreen
             camera.x = camera.x < 0 ? 0 : camera.x;
             camera.y = camera.y < 0 ? 0 : camera.y;
             camera.x = camera.x > camera.w - (camera.w/Game::scroll) ? camera.w - (camera.w/Game::scroll): camera.x;
             camera.y = camera.y > camera.h - (camera.h/Game::scroll) ? camera.h - (camera.h/Game::scroll) : camera.y;
-
-            //std::cout << "CAMERA VALUES AFTER CLAMPING" << std::endl;
-            //std::cout << "Camera.x: " << camera.x << ", camera.y: " << camera.y << std::endl;
-
-            //std::cout << "CAMERA WIDTH: " << camera.w << std::endl;
-            //std::cout << "CAMERA HEIGHT: " << camera.h << std::endl;
         }
         else
         {

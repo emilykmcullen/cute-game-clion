@@ -35,6 +35,7 @@ and 2560/128 = 20 and 1280/128 = 10
 NOTES
 -----
 1. Remember to adjust mapsize accordingly when adjusting the scale of the tiles!!
+2. DO NOT PUT COMMAS AT THE END OF LINES!!!!!
 
 
 PNGS

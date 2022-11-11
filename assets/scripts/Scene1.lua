@@ -4,21 +4,24 @@ Scene1 = {
     -- Table to define the list of assets
     ----------------------------------------------------
     assets = {
-        [0] = { type="texture", id = "player-texture", file = "../../assets/character-spritesheets/monsterspritesheet.png" },
+        [0] = { type="texture", id = "pigeon", file = "../../assets/character-spritesheets/pigeon.png" },
         [1] = { type="texture", id = "background", file = "../../assets/backgrounds/twotiles.png" },
         [2] = { type="texture", id = "nums", file = "../../assets/backgrounds/nums.png" },
+        [3] = { type="texture", id = "car", file = "../../assets/character-spritesheets/car.png" },
+        [4] = { type="texture", id = "test", file = "../../assets/backgrounds/test-landscape.png" },
+        [5] = { type="texture", id = "greencar", file = "../../assets/character-spritesheets/greencar.png" },
 
     },
     ----------------------------------------------------
     -- table to define the map config variables
     ----------------------------------------------------
     map = {
-        textureAssetId = "nums",
-        file = "../../assets/mapfiles/nums.map",
-        scale = 2,
+        textureAssetId = "test",
+        file = "../../assets/mapfiles/landscape.map",
+        scale = 4,
         tileSize = 32,
-        mapSizeX = 80,
-        mapSizeY = 50,
+        mapSizeX = 40,
+        mapSizeY = 25,
         scroll = 4
     },
     ----------------------------------------------------
@@ -39,13 +42,13 @@ Scene1 = {
                         x = 0,
                         y = 0
                     },
-                    width = 96,
-                    height = 64,
-                    scale = 1,
+                    width = 32,
+                    height = 32,
+                    scale = 5,
                     centered = false
                 },
                 sprite = {
-                    textureAssetId = "player-texture",
+                    textureAssetId = "car",
                     animated = true,
                     animatedWhileNotMoving = false,
                     frameCount = 2,
@@ -62,11 +65,162 @@ Scene1 = {
                         shoot = "space"
                     }
                 },
-                collider = { tag = "PLAYER" }
+                collider = {
+                        tag = "PLAYER",
+                         specialSize = true,
+                         x = 100,
+                         y = 163,
+                         width = 32,
+                         height = 14
+                         }
             }
             --end of components
-        }
+        },
         -- end of this particular entity
+        [1] = {
+                name = "pigeon",
+                layer = 4,
+                isActive = true,
+                components = {
+                    transform = {
+                        position = {
+                            x = 1100,
+                            y = 400
+                        },
+                        velocity = {
+                            x = 0,
+                            y = 0
+                        },
+                        width = 96,
+                        height = 64,
+                        scale = 0.5,
+                        centered = false
+                    },
+                    sprite = {
+                        textureAssetId = "pigeon",
+                        animated = true,
+                        animatedWhileNotMoving = true,
+                        frameCount = 4,
+                        animationSpeed = 180,
+                        hasDirections = true,
+                        fixed = false
+                    },
+                    movementschedule = {
+                                            destinations = {
+                                                                [0] = { x = 1100, y = 400},
+                                                                [1] = { x = 10, y = 50},
+                                                                [2] = { x = 1100, y = 50}
+                                                            },
+                                            timeAtDestination = 5
+                                    }
+                }
+                --end of components
+            },
+            -- end of this particular entity
+            [2] = {
+                        name = "shopcollidor",
+                        layer = 2,
+                        isActive = true,
+                        components = {
+                            transform = {
+                                position = {
+                                    x = 0,
+                                    y = 0
+                                },
+                                velocity = {
+                                    x = 0,
+                                    y = 0
+                                },
+                                --width = 5120,
+                                --height = 512,
+                                width = 1,
+                                height =1,
+                                scale = 1,
+                                centered = false
+                        },
+                            collider = {
+                                            tag = "OBSTACLE",
+                                            specialSize = false
+                                        }
+                }
+                --end of components
+            },
+            -- end of this particular entity
+            [3] = {
+                    name = "shopcollidor2",
+                    layer = 2,
+                    isActive = true,
+                    components = {
+                        transform = {
+                            position = {
+                                x = 0,
+                                y = 896
+                            },
+                            velocity = {
+                                x = 0,
+                                y = 0
+                            },
+                            width = 5120,
+                            height = 448,
+                            scale = 1,
+                            centered = false
+                        },
+                        collider = {
+                                    tag = "OBSTACLE",
+                                    specialSize = false
+                         }
+                    }
+                    --end of components
+            },
+            -- end of this particular entity
+            [4] = {
+                    name = "greencar",
+                    layer = 1,
+                    isActive = true,
+                    components = {
+                        transform = {
+                            position = {
+                                x = 1200,
+                                y = 650
+                            },
+                            velocity = {
+                                x = 0,
+                                y = 0
+                            },
+                            width = 32,
+                            height = 32,
+                            scale = 5,
+                            rotation = 0,
+                            centered = false
+                        },
+                        sprite = {
+                            textureAssetId = "greencar",
+                            animated = true,
+                            animatedWhileNotMoving = false,
+                            frameCount = 2,
+                            animationSpeed = 500,
+                            hasDirections = true,
+                            fixed = false
+                        },
+                        movementschedule = {
+                                destinations = {
+                                                    [0] = { x = 0, y = 650}
+                                                },
+                                timeAtDestination = 0
+                        },
+                        collider = { tag = "OBSTACLE",
+                                       specialSize = true,
+                                       x = 1200,
+                                       y = 713,
+                                       width = 32,
+                                       height = 18
+                                       }
+                }
+                --end of components
+            },
+            -- end of this particular entity
+
+
     }
     --end of entities
 }

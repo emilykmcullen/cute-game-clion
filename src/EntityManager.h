@@ -35,6 +35,8 @@ public:
     interaction CheckIfClickedOnEntity(Sint32 x, Sint32 y);
     CursorType IsCursorOverInteractionRect(Sint32 x, Sint32 y);
 
+    void RearrangeObstacleLayers();
+
 
 };
 

@@ -11,8 +11,9 @@ enum LayerType {
     TILEMAP_LAYER = 0,
     OBSTACLE_LAYER = 1,
     PLAYER_LAYER = 2,
-    NPC_LAYER = 3,
-    INTERACTION_LAYER = 4
+    OBSTACLE_ONTOP_LAYER = 3,
+    NPC_LAYER = 4,
+    INTERACTION_LAYER = 5
 };
 const unsigned int NUM_LAYERS = 5;
 

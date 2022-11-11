@@ -110,6 +110,12 @@ public:
     }
 
     void Render() override {
+        SDL_SetRenderDrawColor(Game::renderer, 255,255,0,255);
+        int x = position.x;
+        int y = position.y;
+        SDL_Rect transform{x, y, width * scale, height*scale };
+        //SDL_RenderDrawRect(Game::renderer, &sourceRectangle);
+        SDL_RenderDrawRect(Game::renderer, &transform);
     }
 };
 
