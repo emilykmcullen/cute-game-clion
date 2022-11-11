@@ -8,7 +8,7 @@ Scene1 = {
         [1] = { type="texture", id = "background", file = "../../assets/backgrounds/twotiles.png" },
         [2] = { type="texture", id = "nums", file = "../../assets/backgrounds/nums.png" },
         [3] = { type="texture", id = "car", file = "../../assets/character-spritesheets/car.png" },
-        [4] = { type="texture", id = "test", file = "../../assets/backgrounds/test-landscape.png" },
+        [4] = { type="texture", id = "test", file = "../../assets/mapfiles/tiledmap.png" },
         [5] = { type="texture", id = "greencar", file = "../../assets/character-spritesheets/greencar.png" },
 
     },
@@ -17,7 +17,6 @@ Scene1 = {
     ----------------------------------------------------
     map = {
         textureAssetId = "test",
-        file = "../../assets/mapfiles/landscape.map",
         scale = 4,
         tileSize = 32,
         mapSizeX = 40,
@@ -36,7 +35,7 @@ Scene1 = {
                 transform = {
                     position = {
                         x = 100,
-                        y = 100
+                        y = 450
                     },
                     velocity = {
                         x = 0,
@@ -45,7 +44,8 @@ Scene1 = {
                     width = 32,
                     height = 32,
                     scale = 5,
-                    centered = false
+                    centered = false,
+                    offscreen = false
                 },
                 sprite = {
                     textureAssetId = "car",
@@ -68,9 +68,9 @@ Scene1 = {
                 collider = {
                         tag = "PLAYER",
                          specialSize = true,
-                         x = 100,
-                         y = 163,
-                         width = 32,
+                         x = 101,
+                         y = 513,
+                         width = 30,
                          height = 14
                          }
             }
@@ -94,7 +94,8 @@ Scene1 = {
                         width = 96,
                         height = 64,
                         scale = 0.5,
-                        centered = false
+                        centered = false,
+                        offscreen = true
                     },
                     sprite = {
                         textureAssetId = "pigeon",
@@ -134,9 +135,10 @@ Scene1 = {
                                 --width = 5120,
                                 --height = 512,
                                 width = 1,
-                                height =1,
+                                height = 1,
                                 scale = 1,
-                                centered = false
+                                centered = false,
+                                offscreen = false
                         },
                             collider = {
                                             tag = "OBSTACLE",
@@ -160,10 +162,13 @@ Scene1 = {
                                 x = 0,
                                 y = 0
                             },
-                            width = 5120,
-                            height = 448,
+                            --width = 5120,
+                            --height = 448,
+                            width = 1,
+                            height = 1,
                             scale = 1,
-                            centered = false
+                            centered = false,
+                            offscreen = false
                         },
                         collider = {
                                     tag = "OBSTACLE",
@@ -191,7 +196,8 @@ Scene1 = {
                             height = 32,
                             scale = 5,
                             rotation = 0,
-                            centered = false
+                            centered = false,
+                            offscreen = true
                         },
                         sprite = {
                             textureAssetId = "greencar",
@@ -204,15 +210,15 @@ Scene1 = {
                         },
                         movementschedule = {
                                 destinations = {
-                                                    [0] = { x = 0, y = 650}
+                                                    [0] = { x = -500, y = 650}
                                                 },
                                 timeAtDestination = 0
                         },
                         collider = { tag = "OBSTACLE",
                                        specialSize = true,
-                                       x = 1200,
+                                       x = 1201,
                                        y = 713,
-                                       width = 32,
+                                       width = 30,
                                        height = 18
                                        }
                 }

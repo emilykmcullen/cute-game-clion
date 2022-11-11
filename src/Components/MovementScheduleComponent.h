@@ -89,8 +89,8 @@ public:
                 // Update the x/y direction velocity to move towards the destination
                 vec2 moveDirection = { currentDestination.x - transform->position.x, currentDestination.y - transform->position.y};
                 NormalizeVector(moveDirection);
-                transform->velocity.x = (moveDirection.x * 100);
-                transform->velocity.y = (moveDirection.y * 100);
+                transform->velocity.x = (moveDirection.x * 500);
+                transform->velocity.y = (moveDirection.y * 500);
                 // NEED TO CALCULATE WHICH SPRITE ANIMATION TO PLAY HERE
                 owner->IsMoving = true;
                 float absX = abs(moveDirection.x);

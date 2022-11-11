@@ -41,23 +41,16 @@ public:
     }
 
     void Update(float deltaTime) override {
-
-
         collider.x = static_cast<int>(transform->position.x) + xOffset;
         collider.y = static_cast<int>(transform->position.y) + yOffset;
         this->nextPosCollider = collider;
-
     }
 
 
     //just used for viewing the bounding boxes, can be removed later
      void Render() override {
          SDL_SetRenderDrawColor(Game::renderer, 255,0,0,255);
-         //SDL_RenderDrawRect(Game::renderer, &sourceRectangle);
-         SDL_RenderDrawRect(Game::renderer, &collider);
-        //SDL_RenderDrawRect(Game::renderer, &destinationRectangle);
-         //SDL_RenderDrawRect(Game::renderer, &nextPosCollider);
-         //SDL_RenderDrawRect(Game::renderer,&Game::camera);
-
+         //SDL_RenderDrawRect(Game::renderer, &collider);
+         SDL_RenderDrawRect(Game::renderer, &Game::camera);
      }
 };

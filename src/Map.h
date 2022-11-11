@@ -13,6 +13,7 @@ public:
     ~Map();
     void LoadMap(std::string filePath, int mapSizeX, int mapSizeY);
     void AddTile(int sourceX, int sourceY, int x, int y);
+    void LoadMap(int mapSizeX, int mapSizeY);
 
 };
 

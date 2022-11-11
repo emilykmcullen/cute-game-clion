@@ -2,6 +2,7 @@
 #include <iostream>
 #include "./Components/ColliderComponent.h"
 #include "./Components/InteractionComponent.h"
+#include "./Components/MovementScheduleComponent.h"
 
 void EntityManager::ClearData(){
     for (auto& entity: entities){
@@ -20,7 +21,9 @@ bool EntityManager::HasNoEntities(){
 }
 
 void EntityManager::Update(float deltaTime){
+
     RearrangeObstacleLayers();
+
     for (auto& entity: entities){
         if (entity->IsActive())
         {
@@ -32,10 +35,6 @@ void EntityManager::Update(float deltaTime){
     CheckPlayerCollisions();
 
     for (auto& entity: entities){
-        if (entity->IsActive())
-        {
-            entity->CalculateColliderNextPosition(deltaTime);
-        }
         entity->Update(deltaTime);
     }
     //DestroyInactiveEntities();
@@ -64,20 +63,20 @@ void EntityManager::Render(){
 void EntityManager::RearrangeObstacleLayers()
 {
     Entity* player = GetEntityByName("player");
-    for (auto& entity: GetEntitiesByLayer(static_cast<LayerType>(3)))
+    for (auto& entity: GetEntitiesByLayer(OBSTACLE_ONTOP_LAYER))
     {
         // If the player is below the obstacle, the obstacle should be behind the player
         if (player->GetComponent<TransformComponent>()->position.y > entity->GetComponent<TransformComponent>()->position.y)
         {
-            entity->layer = static_cast<LayerType>(1);
+            entity->layer = OBSTACLE_LAYER;
         }
     }
-    for (auto& entity: GetEntitiesByLayer(static_cast<LayerType>(1)))
+    for (auto& entity: GetEntitiesByLayer(OBSTACLE_LAYER))
     {
         // If the player is above the obstacle, the obstacle should be infront of the player
         if (player->GetComponent<TransformComponent>()->position.y < entity->GetComponent<TransformComponent>()->position.y)
         {
-            entity->layer = static_cast<LayerType>(3);
+            entity->layer = OBSTACLE_ONTOP_LAYER;
         }
     }
 }
@@ -156,6 +155,7 @@ CollisionType EntityManager::CheckPlayerCollisions() const {
                 ColliderComponent* thatCollider = thatEntity->GetComponent<ColliderComponent>();
                 if (Collision::CheckRectangleCollision(thisCollider->nextPosCollider, thatCollider->nextPosCollider)) {
                     if (thisCollider->colliderTag.compare("PLAYER") == 0 && thatCollider->colliderTag.compare("NPC") == 0) {
+                        //reset player position to the previous frame position
                         thisEntity->resetPosition = true;
                         return PLAYER_NPC_COLLISION;
                     }
@@ -164,9 +164,11 @@ CollisionType EntityManager::CheckPlayerCollisions() const {
                     }
                     if (thisCollider->colliderTag.compare("PLAYER") == 0 && thatCollider->colliderTag.compare("OBSTACLE") == 0) {
                         thisEntity->resetPosition = true;
+                        thatEntity->resetPosition = true;
                         return PLAYER_OBSTACLE_COLLISION;
                     }
                 }
+
             }
         }
 

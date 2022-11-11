@@ -30,25 +30,14 @@ void Map::LoadMap(std::string filePath, int mapSizeX, int mapSizeY){
             // sourceRectY = 32
             char nullterminatedChar1[2] = { ch, '\0'};
             int atoiY = atoi(nullterminatedChar1);
-            std::cout << "ATOIY: " << atoiY << std::endl;
             int sourceRectY = atoiY * tileSize;
-
 
             mapFile.get(ch);
             char nullterminatedChar2[2] = { ch, '\0'};
             int atoiX = atoi(nullterminatedChar2);
-            std::cout << "ATOIX: " << atoiX << std::endl;
             int sourceRectX = atoiX * tileSize;
 
-
-            std::cout << "x: " << x << ", y: " << y << std::endl;
             AddTile(sourceRectX, sourceRectY, x * (scale * tileSize), y * (scale * tileSize));
-            std::cout << "SOURCE X: " << sourceRectX << ", SOURCE Y: " << sourceRectY << std::endl;
-            int b = x * scale * tileSize;
-            int c = y * scale * tileSize;
-            std::cout << "DEST X: " << b << ", DEST Y: " << c << std::endl;
-            std::cout << "--------------------------------" << std::endl;
-            std::cout << " " << std::endl;
             // Ignore the comma OR ignore the new line char at the end of each line
             mapFile.ignore();
 
@@ -62,4 +51,21 @@ void Map::AddTile(int sourceRectX, int sourceRectY, int x, int y){
     //ADD NEW TILE ENTITY IN THE GAME SCENE
     Entity& newTile(manager.AddEntity("Tile", TILEMAP_LAYER, true));
     newTile.AddComponent<TileComponent>(sourceRectX, sourceRectY, x, y, tileSize, scale, textureId);
+}
+
+void Map::LoadMap(int mapSizeX, int mapSizeY){
+    //go along each row advancing by tilesize each time until you reach mapsizex
+    // then advance row by tilesize until you reach tilesizey
+    for (int y = 0; y < mapSizeY; y++)
+    {
+        for (int x = 0; x < mapSizeX; x++)
+        {
+            int sourceRectX = x * tileSize;
+            int sourceRectY = y * tileSize;
+            int destinationX = x * scale * tileSize;
+            int destinationY = y * scale * tileSize;
+            AddTile(sourceRectX, sourceRectY, destinationX, destinationY);
+        }
+    }
+
 }

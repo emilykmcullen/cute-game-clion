@@ -53,7 +53,7 @@ void Game::Initialize(int width, int height) {
             SDL_WINDOWPOS_CENTERED,
             width,
             height,
-            SDL_WINDOW_SHOWN
+            SDL_WINDOW_BORDERLESS
     );
     if(!window){
         std::cerr << "Error creating SDL window." << std::endl;
@@ -136,7 +136,6 @@ void Game::LoadScene(int scenenum)
 
     sol::table levelMap = levelData["map"];
     std::string mapTextureId = levelMap["textureAssetId"];
-    std::string mapFile = levelMap["file"];
     std::cout << "MAPTEXID: " << mapTextureId << std::endl;
     scroll = levelMap["scroll"];
     camera.w = WINDOW_WIDTH * scroll;
@@ -149,7 +148,6 @@ void Game::LoadScene(int scenenum)
     );
 
     gameMap->LoadMap(
-            mapFile,
             static_cast<int>(levelMap["mapSizeX"]),
             static_cast<int>(levelMap["mapSizeY"])
     );
@@ -178,6 +176,7 @@ void Game::LoadScene(int scenenum)
             sol::optional<sol::table> existsTransformComponent = entity["components"]["transform"];
             if (existsTransformComponent != sol::nullopt) {
                 bool isCentered = entity["components"]["transform"]["centered"];
+                bool canGoOffscreen = entity["components"]["transform"]["offscreen"];
                 newEntity.AddComponent<TransformComponent>(
                         static_cast<int>(entity["components"]["transform"]["position"]["x"]),
                         static_cast<int>(entity["components"]["transform"]["position"]["y"]),
@@ -186,7 +185,8 @@ void Game::LoadScene(int scenenum)
                         static_cast<int>(entity["components"]["transform"]["width"]),
                         static_cast<int>(entity["components"]["transform"]["height"]),
                         static_cast<int>(entity["components"]["transform"]["scale"]),
-                        isCentered
+                        isCentered,
+                        canGoOffscreen
 
                 );
             }
