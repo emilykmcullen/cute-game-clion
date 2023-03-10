@@ -20,6 +20,7 @@ public:
 
     float timeTracker = 0;
     bool atDestination = true;
+    bool updateAnimation = false;
     TransformComponent* transform;
     SpriteComponent* sprite;
 
@@ -57,6 +58,8 @@ public:
 
     void Update(float deltaTime) override
     {
+        // if we are an enemy, we also need to check if we're close to the player
+        // if so we come off our regular schedule and move towards the player instead d
         if (atDestination)
         {
             timeTracker += deltaTime;
@@ -64,7 +67,7 @@ public:
 
         if (!Game::suspendMovement)
         {
-            // We have been at the destination for enough time
+            // We have been at the destination for enough time, start to move to next destination
             if (timeTracker >= timeAtDestination)
             {
                 atDestination = false;
@@ -89,35 +92,46 @@ public:
                 // Update the x/y direction velocity to move towards the destination
                 vec2 moveDirection = { currentDestination.x - transform->position.x, currentDestination.y - transform->position.y};
                 NormalizeVector(moveDirection);
-                transform->velocity.x = (moveDirection.x * 500);
-                transform->velocity.y = (moveDirection.y * 500);
+                transform->velocity.x = (moveDirection.x * 100);
+                transform->velocity.y = (moveDirection.y * 100);
                 // NEED TO CALCULATE WHICH SPRITE ANIMATION TO PLAY HERE
                 owner->IsMoving = true;
                 float absX = abs(moveDirection.x);
                 float absY = abs(moveDirection.y);
-                if (absX > absY || absX > 0.5 ) // if X dir is bigger than Y direction, OR if X direction is actually just high (more than 0.5 for now)
-                {
-                    if (moveDirection.x >= 0)
-                    {
 
-                        sprite->Play("RightAnimation");
+                //TEMP
+                if (!sprite->collisionAnimPlaying)
+                {
+                    if (absX > absY || absX > 0.5 ) // if X dir is bigger than Y direction, OR if X direction is actually just high (more than 0.5 for now)
+                    {
+                        if (moveDirection.x >= 0)
+                        {
+
+                            sprite->Play("RightAnimation");
+                        }
+                        else
+                        {
+                            sprite->Play("LeftAnimation");
+                        }
                     }
                     else
                     {
-                        sprite->Play("LeftAnimation");
+                        if (moveDirection.y >= 0)
+                        {
+                            sprite->Play("DownAnimation");
+                        }
+                        else
+                        {
+                            sprite->Play("UpAnimation");
+                        }
                     }
                 }
                 else
                 {
-                    if (moveDirection.y >= 0)
-                    {
-                        sprite->Play("DownAnimation");
-                    }
-                    else
-                    {
-                        sprite->Play("UpAnimation");
-                    }
+                    sprite->Play("CollisionAnimMoving");
                 }
+
+
                 // Have we reached the destination (or within +/- units of it)?
                 if (ReachedDestination(4))
                 {
@@ -125,26 +139,42 @@ public:
                     owner->IsMoving = false;
                     timeTracker = 0;
 
-                    if (transform->velocity.x > 0)
+                    //TEMP TO DO
+                    if (!sprite->collisionAnimPlaying)
                     {
-                        sprite->Play("RightStationary");
-                    }
-                    else if (transform->velocity.x < 0)
-                    {
-                        sprite->Play("LeftStationary");
-                    }
-                    else if (transform->velocity.y > 0)
-                    {
-                        sprite->Play("DownStationary");
+                        if (transform->velocity.y > 0 && (abs(transform->velocity.y) > abs(transform->velocity.x)))
+                        {
+                            sprite->Play("DownStationary");
+                        }
+                        else if (transform->velocity.y < 0 && (abs(transform->velocity.y) > abs(transform->velocity.x)))
+                        {
+                            sprite->Play("UpStationary");
+                        }
+                        else if (transform->velocity.x < 0)
+                        {
+                            sprite->Play("LeftStationary");
+                        }
+                        else
+                        {
+                            sprite->Play("RightStationary");
+                        }
                     }
                     else
                     {
-                        sprite->Play("UpStationary");
+                        sprite->Play("CollisionAnimStill");
                     }
-
                     transform->velocity.x = 0;
                     transform->velocity.y = 0;
                 }
+            }
+            // if we are at the destination the animation is not updated!!!
+            // We are at the destination but maybe something else has happened that means the animation needs updating
+            if (updateAnimation)
+            {
+
+                //TO DO : sort this out
+                sprite->Play("CollisionAnimStill");
+                updateAnimation = false;
             }
         }
     }

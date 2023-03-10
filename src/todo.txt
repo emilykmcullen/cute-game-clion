@@ -1,3 +1,1 @@
-1. Work on interaction rects and their placement in the screen etc etc
-2. Disable keyboard input while some interaction entities are active
-3. you can only interact with something when you are next to it
+colliders have a 'result' eg 'squash' or 'stop'

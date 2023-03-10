@@ -7,15 +7,19 @@ const unsigned int WINDOW_HEIGHT = 800;
 const unsigned int FPS = 60;
 const unsigned int FRAME_TARGET_TIME = 1000/FPS;
 
+//** IF YOU CHANGE THIS REMEMBER TO UPDATE NUM_LAYERS!!!! **/
 enum LayerType {
     TILEMAP_LAYER = 0,
     OBSTACLE_LAYER = 1,
     PLAYER_LAYER = 2,
     OBSTACLE_ONTOP_LAYER = 3,
     NPC_LAYER = 4,
-    INTERACTION_LAYER = 5
+    PLAYER_ONTOP_LAYER = 5,
+    INTERACTION_LAYER = 6,
+    TEXT_LABEL_LAYER = 7
 };
-const unsigned int NUM_LAYERS = 5;
+//** IF YOU CHANGE THIS REMEMBER TO UPDATE NUM_LAYERS!!!! **/
+const unsigned int NUM_LAYERS = 8;
 
 enum InteractionType {
     NO_INTERACTION = 0,

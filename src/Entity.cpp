@@ -19,7 +19,11 @@ Entity::Entity(EntityManager& manager, std::string name, LayerType layer, bool i
 
 void Entity::Update(float deltaTime){
     for(auto& component: components){
-        component->Update(deltaTime);
+        if (component->isActive)
+        {
+            component->Update(deltaTime);
+        }
+
     }
 }
 

@@ -25,7 +25,7 @@ public:
     //void SetNonTileEntities();
     std::vector<Entity*> GetEntitiesByLayer(LayerType layer) const;
     Entity* GetEntityByName(std::string name) const;
-    CollisionType CheckPlayerCollisions() const;
+    void CheckPlayerCollisions() const;
     void DestroyInactiveEntities();
 
 

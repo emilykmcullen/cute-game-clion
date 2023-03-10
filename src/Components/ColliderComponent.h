@@ -13,14 +13,16 @@ public:
     SDL_Rect nextPosCollider;
     int xOffset = 0;
     int yOffset = 0;
+    std::string resultOfCollision;
 
 
-    ColliderComponent(std::string colliderTag, int x, int y, int width, int height, int scale) {
+    ColliderComponent(std::string colliderTag, int x, int y, int width, int height, int scale, std::string result) {
         int newWidth = width * scale;
         int newHeight = height * scale;
         this->colliderTag = colliderTag;
         this->collider = {x , y , newWidth, newHeight};
         this->nextPosCollider = collider;
+        this->resultOfCollision = result;
     }
 
     ~ColliderComponent()
@@ -51,6 +53,6 @@ public:
      void Render() override {
          SDL_SetRenderDrawColor(Game::renderer, 255,0,0,255);
          //SDL_RenderDrawRect(Game::renderer, &collider);
-         SDL_RenderDrawRect(Game::renderer, &Game::camera);
+         //SDL_RenderDrawRect(Game::renderer, &Game::camera);
      }
 };

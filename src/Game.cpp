@@ -7,6 +7,7 @@
 #include "./Components/ColliderComponent.h"
 #include "./Components/MovementScheduleComponent.h"
 #include "./Components/InteractionComponent.h"
+#include "./Components/TextLabelComponent.h"
 #include "./Entity.h"
 #include "./Component.h"
 
@@ -60,6 +61,7 @@ void Game::Initialize(int width, int height) {
         return;
     }
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
     if(!renderer){
         std::cerr << "Error creating SDL renderer." << std::endl;
         return;
@@ -70,8 +72,6 @@ void Game::Initialize(int width, int height) {
     isRunning = true;
 
     LoadScene(1);
-
-    manager.ListAllEntities();
 
     return;
 }
@@ -125,6 +125,13 @@ void Game::LoadScene(int scenenum)
                 std::string assetId = asset["id"];
                 std::string assetFile = asset["file"];
                 assetManager->AddTexture(assetId, assetFile.c_str(), renderer);
+            }
+
+            if (assetType.compare("font") == 0) {
+                std::string assetId = asset["id"];
+                std::string assetFile = asset["file"];
+                int fontSize = asset["fontSize"];
+                assetManager->AddFont(assetId, assetFile.c_str(), fontSize);
             }
         }
         assetIndex++;
@@ -184,11 +191,44 @@ void Game::LoadScene(int scenenum)
                         static_cast<int>(entity["components"]["transform"]["velocity"]["y"]),
                         static_cast<int>(entity["components"]["transform"]["width"]),
                         static_cast<int>(entity["components"]["transform"]["height"]),
-                        static_cast<int>(entity["components"]["transform"]["scale"]),
+                        static_cast<float>(entity["components"]["transform"]["scale"]),
                         isCentered,
                         canGoOffscreen
 
                 );
+            }
+
+            // Add collider component
+            sol::optional<sol::table> existsColliderComponent = entity["components"]["collider"];
+            if (existsColliderComponent != sol::nullopt) {
+                std::string colliderTag = entity["components"]["collider"]["tag"];
+                std::string resultOfCollision = entity["components"]["collider"]["result"];
+                bool isSpecialSize = entity["components"]["collider"]["specialSize"];
+                if (isSpecialSize)
+                {
+                    newEntity.AddComponent<ColliderComponent>(
+                            colliderTag,
+                            static_cast<int>(entity["components"]["collider"]["x"]),
+                            static_cast<int>(entity["components"]["collider"]["y"]),
+                            static_cast<int>(entity["components"]["collider"]["width"]),
+                            static_cast<int>(entity["components"]["collider"]["height"]),
+                            static_cast<int>(entity["components"]["transform"]["scale"]),
+                            resultOfCollision
+                    );
+                }
+                else
+                {
+                    newEntity.AddComponent<ColliderComponent>(
+                            colliderTag,
+                            static_cast<int>(entity["components"]["transform"]["position"]["x"]),
+                            static_cast<int>(entity["components"]["transform"]["position"]["y"]),
+                            static_cast<int>(entity["components"]["transform"]["width"]),
+                            static_cast<int>(entity["components"]["transform"]["height"]),
+                            static_cast<int>(entity["components"]["transform"]["scale"]),
+                            resultOfCollision
+                    );
+                }
+
             }
 
             // Add sprite component
@@ -197,6 +237,7 @@ void Game::LoadScene(int scenenum)
                 std::string textureId = entity["components"]["sprite"]["textureAssetId"];
                 bool isAnimated = entity["components"]["sprite"]["animated"];
                 bool isAnimatedWhileNotMoving = entity["components"]["sprite"]["animatedWhileNotMoving"];
+                bool hasCollisionAnim = entity["components"]["sprite"]["hasCollisionAnim"];
                 if (isAnimated) {
                     newEntity.AddComponent<SpriteComponent>(
                             textureId,
@@ -204,7 +245,8 @@ void Game::LoadScene(int scenenum)
                             static_cast<int>(entity["components"]["sprite"]["animationSpeed"]),
                             static_cast<bool>(entity["components"]["sprite"]["hasDirections"]),
                             static_cast<bool>(entity["components"]["sprite"]["fixed"]),
-                            isAnimatedWhileNotMoving
+                            isAnimatedWhileNotMoving,
+                            hasCollisionAnim
                     );
                 } else {
                     newEntity.AddComponent<SpriteComponent>(textureId, false);
@@ -223,36 +265,6 @@ void Game::LoadScene(int scenenum)
                     std::string shootKey = entity["components"]["input"]["keyboard"]["shoot"];
                     newEntity.AddComponent<KeyboardControlComponent>(upKey, rightKey, downKey, leftKey, shootKey);
                 }
-            }
-
-            // Add collider component
-            sol::optional<sol::table> existsColliderComponent = entity["components"]["collider"];
-            if (existsColliderComponent != sol::nullopt) {
-                std::string colliderTag = entity["components"]["collider"]["tag"];
-                bool isSpecialSize = entity["components"]["collider"]["specialSize"];
-                if (isSpecialSize)
-                {
-                    newEntity.AddComponent<ColliderComponent>(
-                            colliderTag,
-                            static_cast<int>(entity["components"]["collider"]["x"]),
-                            static_cast<int>(entity["components"]["collider"]["y"]),
-                            static_cast<int>(entity["components"]["collider"]["width"]),
-                            static_cast<int>(entity["components"]["collider"]["height"]),
-                            static_cast<int>(entity["components"]["transform"]["scale"])
-                    );
-                }
-                else
-                {
-                    newEntity.AddComponent<ColliderComponent>(
-                            colliderTag,
-                            static_cast<int>(entity["components"]["transform"]["position"]["x"]),
-                            static_cast<int>(entity["components"]["transform"]["position"]["y"]),
-                            static_cast<int>(entity["components"]["transform"]["width"]),
-                            static_cast<int>(entity["components"]["transform"]["height"]),
-                            static_cast<int>(entity["components"]["transform"]["scale"])
-                    );
-                }
-
             }
 
             // Add MovementScheduleComponent
@@ -317,6 +329,26 @@ void Game::LoadScene(int scenenum)
                 }
 
 
+            }
+
+            // Add text lbale component
+            sol::optional<sol::table> existsTextLabelComponent = entity["components"]["textlabel"];
+            if (existsTextLabelComponent != sol::nullopt) {
+                    int x = entity["components"]["textlabel"]["x"];
+                    int y = entity["components"]["textlabel"]["y"];
+                    std::string text = entity["components"]["textlabel"]["text"];
+                    std::string font = entity["components"]["textlabel"]["font"];
+                    SDL_Color col = { 0, 0, 0};
+                    bool background = entity["components"]["textlabel"]["background"];
+                    if (background)
+                    {
+                        SDL_Color backcol = { 255, 255, 255};
+                        newEntity.AddComponent<TextLabelComponent>(x, y, text, font, col, backcol);
+                    }
+                    else
+                    {
+                        newEntity.AddComponent<TextLabelComponent>(x, y, text, font, col);
+                    }
             }
         }
         entityIndex++;

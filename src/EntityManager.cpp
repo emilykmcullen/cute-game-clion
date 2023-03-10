@@ -141,7 +141,8 @@ unsigned int EntityManager::GetEntityCount(){
     return entities.size();
 }
 
-CollisionType EntityManager::CheckPlayerCollisions() const {
+//Check PRE-COLLISIONS!
+void EntityManager::CheckPlayerCollisions() const {
     Entity* thisEntity = GetEntityByName("player");
     //check current entity has collider component
     ColliderComponent* thisCollider = thisEntity->GetComponent<ColliderComponent>();
@@ -153,27 +154,40 @@ CollisionType EntityManager::CheckPlayerCollisions() const {
         {
             if (thisEntity->name.compare(thatEntity->name) != 0 && thatEntity->HasComponent<ColliderComponent>()) {
                 ColliderComponent* thatCollider = thatEntity->GetComponent<ColliderComponent>();
+                // CHECK IF WE WILL COLLIDE IN THE NEXT FRAME
                 if (Collision::CheckRectangleCollision(thisCollider->nextPosCollider, thatCollider->nextPosCollider)) {
                     if (thisCollider->colliderTag.compare("PLAYER") == 0 && thatCollider->colliderTag.compare("NPC") == 0) {
                         //reset player position to the previous frame position
-                        thisEntity->resetPosition = true;
-                        return PLAYER_NPC_COLLISION;
-                    }
-                    if (thisCollider->colliderTag.compare("PLAYER") == 0 && thatCollider->colliderTag.compare("LEVEL_COMPLETE") == 0) {
-                        return PLAYER_LEVEL_COMPLETE_COLLISION;
+                        if (thatCollider->resultOfCollision == "stopmovement")
+                        {
+                            thisEntity->resetPosition = true;
+                        }
+                        thatEntity->resetPosition = true;
                     }
                     if (thisCollider->colliderTag.compare("PLAYER") == 0 && thatCollider->colliderTag.compare("OBSTACLE") == 0) {
                         thisEntity->resetPosition = true;
                         thatEntity->resetPosition = true;
-                        return PLAYER_OBSTACLE_COLLISION;
+                    }
+                }
+                // CHECK CURRENT COLLISION
+                if (Collision::CheckRectangleCollision(thisCollider->collider, thatCollider->collider)) {
+                    if (thisCollider->colliderTag.compare("PLAYER") == 0 && thatCollider->colliderTag.compare("NPC") == 0) {
+                        if (thatCollider->resultOfCollision == "squash")
+                        {
+                            SpriteComponent* thatSprite = thatEntity->GetComponent<SpriteComponent>();
+                            MovementScheduleComponent* thatMS = thatEntity->GetComponent<MovementScheduleComponent>();
+                            if (!thatSprite->collisionAnimPlaying)
+                            {
+                                thatSprite->collisionAnimPlaying = true;
+                                thatMS->updateAnimation = true;
+                            }
+                        }
                     }
                 }
 
             }
         }
-
     }
-    return NO_COLLISION;
 }
 
 
@@ -199,7 +213,7 @@ interaction EntityManager::CheckIfClickedOnEntity(Sint32 x, Sint32 y)
                 TransformComponent* playerTransform = player->GetComponent<TransformComponent>();
                 int playerX = (int)playerTransform->position.x - Game::camera.x;
                 int playerY = (int)playerTransform->position.y - Game::camera.y;
-                SDL_Rect playerRect = { playerX, playerY,  playerTransform->width * playerTransform->scale, playerTransform->height * playerTransform->scale };
+                SDL_Rect playerRect = { playerX, playerY,  (int)playerTransform->width * (int)playerTransform->scale, (int)playerTransform->height * (int)playerTransform->scale };
                 // Is the interactable entity near enough to the player?
                 int clickAllowance = interactionComponent->clickAllowance;
                 if (clickAllowance == -1 || Collision::CheckRectangleCollisionWithinAllowance(playerRect, interactionComponent->interactionRect, clickAllowance))
@@ -248,7 +262,7 @@ CursorType EntityManager::IsCursorOverInteractionRect(Sint32 x, Sint32 y)
                 TransformComponent* playerTransform = player->GetComponent<TransformComponent>();
                 int playerX = (int)playerTransform->position.x - Game::camera.x;
                 int playerY = (int)playerTransform->position.y - Game::camera.y;
-                SDL_Rect playerRect = { playerX, playerY,  playerTransform->width * playerTransform->scale, playerTransform->height * playerTransform->scale };
+                SDL_Rect playerRect = { playerX, playerY,  (int)playerTransform->width * (int)playerTransform->scale, (int)playerTransform->height * (int)playerTransform->scale };
                 // Is the interactable entity near enough to the player?
                 int clickAllowance = interactionComponent->clickAllowance;
 

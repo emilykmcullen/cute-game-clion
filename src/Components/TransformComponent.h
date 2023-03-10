@@ -10,13 +10,13 @@ public:
     vec2 velocity;
     int width;
     int height;
-    int scale;
+    float scale;
     bool isCentered;
     bool canGoOffScreen;
     bool isOffscreen = false;
 
 
-    TransformComponent(float posX, float posY, float velX, float velY, int w, int h, int s, bool isCentered, bool goOffscreen){
+    TransformComponent(float posX, float posY, float velX, float velY, int w, int h, float s, bool isCentered, bool goOffscreen){
         position = vec2{posX, posY};
         velocity = vec2{velX, velY};
         width = w;
@@ -68,8 +68,6 @@ public:
             rect.x += velocity.x * deltaTime;
             rect.y += velocity.y * deltaTime;
         }
-
-
         return rect;
     }
 
@@ -145,7 +143,7 @@ public:
     }
 
     void Render() override {
-        SDL_SetRenderDrawColor(Game::renderer, 255,255,0,255);
+        //SDL_SetRenderDrawColor(Game::renderer, 255,255,0,255);
         //SDL_RenderDrawRect(Game::renderer, &sourceRectangle);
         //SDL_RenderDrawRect(Game::renderer, &transform);
     }

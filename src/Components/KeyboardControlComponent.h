@@ -114,19 +114,19 @@ public:
     {
         if (upKeyPressed)
         {
-            transform->velocity.y = -400;
+            transform->velocity.y = -250;
         }
         if (rightKeyPressed)
         {
-            transform->velocity.x = 400;
+            transform->velocity.x = 250;
         }
         if (downKeyPressed)
         {
-            transform->velocity.y = 400;
+            transform->velocity.y = 250;
         }
         if (leftKeyPressed)
         {
-            transform->velocity.x = -400;
+            transform->velocity.x = -250;
         }
 
         if (downKeyPressed && rightKeyPressed)
