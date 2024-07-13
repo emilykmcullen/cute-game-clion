@@ -14,9 +14,11 @@ public:
     std::string leftKey;
     std::string shootKey;
     bool upKeyPressed = false;
+    bool upKeyPressedFirst = false;
     bool downKeyPressed = false;
     bool rightKeyPressed = false;
     bool leftKeyPressed = false;
+    bool leftKeyPressedFirst = false;
     TransformComponent *transform;
     SpriteComponent *sprite;
 
@@ -58,29 +60,33 @@ public:
 
     }
 
-    void Update(float deltaTime) override
+    bool HandleEvent(SDL_Event &event)
     {
-        if(Game::event.type == SDL_KEYDOWN){
-            std::string keyCode = std::to_string(Game::event.key.keysym.sym);
+        if(event.type == SDL_KEYDOWN){
+            std::string keyCode = std::to_string(event.key.keysym.sym);
 
-            if (keyCode.compare(upKey)==0){
+            if (keyCode.compare(upKey)==0 && !upKeyPressed){
                 upKeyPressed = true;
+                upKeyPressedFirst = !downKeyPressed;
             }
-            if (keyCode.compare(rightKey)==0){
+            if (keyCode.compare(rightKey)==0 && !rightKeyPressed){
                 rightKeyPressed = true;
+                leftKeyPressedFirst = leftKeyPressed;
             }
-            if (keyCode.compare(downKey)==0){
+            if (keyCode.compare(downKey)==0 && !downKeyPressed){
                 downKeyPressed = true;
+                upKeyPressedFirst = upKeyPressed;
             }
-            if (keyCode.compare(leftKey)==0){
+            if (keyCode.compare(leftKey)==0 && !leftKeyPressed){
                 leftKeyPressed = true;
+                leftKeyPressedFirst = !rightKeyPressed;
             }
             if (keyCode.compare(shootKey)==0){
                 // to do
             }
         }
-        if (Game::event.type == SDL_KEYUP){
-            std::string keyCode = std::to_string(Game::event.key.keysym.sym);
+        if (event.type == SDL_KEYUP){
+            std::string keyCode = std::to_string(event.key.keysym.sym);
 
             if (keyCode.compare(upKey)==0){
                 upKeyPressed = false;
@@ -108,58 +114,64 @@ public:
             owner->IsMoving = false;
         }
         SetMovement();
+        return false;
     }
 
     void SetMovement()
     {
-        if (upKeyPressed)
+        int velocity = 250;
+        if (upKeyPressed && rightKeyPressed || rightKeyPressed && downKeyPressed || downKeyPressed && leftKeyPressed || leftKeyPressed && upKeyPressed)
         {
-            transform->velocity.y = -250;
+            velocity = 180;
         }
-        if (rightKeyPressed)
+        if (upKeyPressed && (!downKeyPressed || !upKeyPressedFirst))
         {
-            transform->velocity.x = 250;
+            transform->velocity.y = -velocity;
         }
-        if (downKeyPressed)
+        if (rightKeyPressed && (!leftKeyPressed || leftKeyPressedFirst))
         {
-            transform->velocity.y = 250;
+            transform->velocity.x = velocity;
         }
-        if (leftKeyPressed)
+        if (downKeyPressed && (!upKeyPressed || upKeyPressedFirst))
         {
-            transform->velocity.x = -250;
+            transform->velocity.y = velocity;
+        }
+        if (leftKeyPressed && (!rightKeyPressed || !leftKeyPressedFirst))
+        {
+            transform->velocity.x = -velocity;
         }
 
-        if (downKeyPressed && rightKeyPressed)
+        if ((downKeyPressed && (!upKeyPressed || !upKeyPressedFirst)) && (rightKeyPressed && (!leftKeyPressed || !leftKeyPressedFirst)))
         {
             sprite->Play("RightAnimation");
         }
-        else if(downKeyPressed && leftKeyPressed)
+        else if((downKeyPressed && (!upKeyPressed || !upKeyPressedFirst)) && (leftKeyPressed && (!rightKeyPressed || leftKeyPressedFirst)))
         {
             sprite->Play("LeftAnimation");
         }
-        else if (downKeyPressed)
+        else if (downKeyPressed && (!upKeyPressed || !upKeyPressedFirst))
         {
             sprite->Play("DownAnimation");
         }
 
-        else if  (upKeyPressed && rightKeyPressed)
+        else if ((upKeyPressed && (!downKeyPressed || upKeyPressedFirst)) && (rightKeyPressed && (!leftKeyPressed || !leftKeyPressedFirst)))
         {
             sprite->Play("RightAnimation");
         }
-        else if (upKeyPressed && leftKeyPressed)
+        else if ((upKeyPressed && (!downKeyPressed || upKeyPressedFirst)) && (leftKeyPressed && (!rightKeyPressed || leftKeyPressedFirst)))
         {
             sprite->Play("LeftAnimation");
         }
-        else if (upKeyPressed)
+        else if (upKeyPressed && (!downKeyPressed || upKeyPressedFirst))
         {
             sprite->Play("UpAnimation");
         }
 
-        else if (rightKeyPressed)
+        else if (rightKeyPressed && (!leftKeyPressed || !leftKeyPressedFirst))
         {
             sprite->Play("RightAnimation");
         }
-        else if (leftKeyPressed)
+        else if (leftKeyPressed && (!rightKeyPressed || leftKeyPressedFirst))
         {
             sprite->Play("LeftAnimation");
         }

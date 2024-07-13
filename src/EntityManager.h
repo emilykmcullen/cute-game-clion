@@ -9,6 +9,7 @@
 #include "Map.h"
 #include "Utils.h"
 
+union SDL_Event;
 
 class EntityManager {
 private:
@@ -17,6 +18,7 @@ private:
 public:
     void ClearData();
     void Update(float deltaTime);
+    void HandleEvent(SDL_Event &event);
     void Render();
     bool HasNoEntities();
     Entity& AddEntity(std::string entityName, LayerType layer, bool isActive);
@@ -27,7 +29,6 @@ public:
     Entity* GetEntityByName(std::string name) const;
     void CheckPlayerCollisions() const;
     void DestroyInactiveEntities();
-
 
     unsigned int GetEntityCount();
     void ListAllEntities() const;

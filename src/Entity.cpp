@@ -27,6 +27,18 @@ void Entity::Update(float deltaTime){
     }
 }
 
+bool Entity::HandleEvent(SDL_Event &event){
+    for(auto component = components.rbegin(); component != components.rend(); ++component){
+        if ((*component)->isActive)
+        {
+            if ((*component)->HandleEvent(event)){
+                return true;
+            };
+        }
+    }
+    return false;
+}
+
 void Entity::Render(){
     for(auto& component: components){
         component->Render();

@@ -5,6 +5,7 @@
 #define COMPONENT_H
 
 class Entity;
+union SDL_Event;
 
 class Component {
 public:
@@ -12,6 +13,7 @@ public:
     virtual ~Component(){};
     virtual void Initialize(){};
     virtual void Update(float deltaTime){};
+    virtual bool HandleEvent(SDL_Event &event){return false;};
     virtual void Render(){};
     bool isActive = true;
 };
