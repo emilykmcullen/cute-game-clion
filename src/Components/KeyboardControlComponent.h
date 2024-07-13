@@ -58,10 +58,10 @@ public:
 
     }
 
-    void Update(float deltaTime) override
+    bool HandleEvent(SDL_Event &event)
     {
-        if(Game::event.type == SDL_KEYDOWN){
-            std::string keyCode = std::to_string(Game::event.key.keysym.sym);
+        if(event.type == SDL_KEYDOWN){
+            std::string keyCode = std::to_string(event.key.keysym.sym);
 
             if (keyCode.compare(upKey)==0){
                 upKeyPressed = true;
@@ -79,8 +79,8 @@ public:
                 // to do
             }
         }
-        if (Game::event.type == SDL_KEYUP){
-            std::string keyCode = std::to_string(Game::event.key.keysym.sym);
+        if (event.type == SDL_KEYUP){
+            std::string keyCode = std::to_string(event.key.keysym.sym);
 
             if (keyCode.compare(upKey)==0){
                 upKeyPressed = false;
@@ -108,6 +108,7 @@ public:
             owner->IsMoving = false;
         }
         SetMovement();
+        return false;
     }
 
     void SetMovement()

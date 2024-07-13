@@ -30,7 +30,6 @@ public:
     bool IsRunning() const;
     static SDL_Renderer *renderer;
     static AssetManager *assetManager;
-    static SDL_Event event;
     static SDL_Rect camera;
     void Initialize(int width, int height);
     void ProcessInput();

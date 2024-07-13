@@ -15,7 +15,6 @@
 #include "Utils.h"
 
 SDL_Renderer* Game::renderer;
-SDL_Event Game::event;
 SDL_Rect Game::camera = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
 SDL_Cursor *cursor = NULL;
 SDL_Cursor *cursorlarge = NULL;
@@ -357,27 +356,35 @@ void Game::LoadScene(int scenenum)
 }
 
 void Game::ProcessInput(){
-    SDL_PollEvent(&event);
-    switch (event.type){
-        case SDL_QUIT:{
-            isRunning = false;
-            break;
-        }
-        case SDL_KEYDOWN: {
-            if (event.key.keysym.sym == SDLK_ESCAPE){
-                isRunning =false;
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+        switch (event.type){
+            case SDL_QUIT:{
+                isRunning = false;
+                continue;
             }
-            break;
+            case SDL_KEYDOWN: {
+                if (event.key.keysym.sym == SDLK_ESCAPE){
+                    isRunning = false;
+                    continue;
+                }
+                break;
+            }
+            case SDL_MOUSEBUTTONDOWN:
+            {
+                interaction interaction1 = manager.CheckIfClickedOnEntity(event.button.x, event.button.y);
+                HandleInteraction(interaction1);
+                if (interaction1.interactionType != InteractionType::NO_INTERACTION) {
+                    continue;
+                }
+                break;
+            }
+            default: {
+                break;
+            }
         }
-        case SDL_MOUSEBUTTONDOWN:
-        {
-            interaction interaction1 = manager.CheckIfClickedOnEntity(event.button.x, event.button.y);
-            HandleInteraction(interaction1);
-            break;
-        }
-        default: {
-            break;
-        }
+
+        manager.HandleEvent(event);
     }
 }
 

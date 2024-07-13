@@ -8,12 +8,15 @@
 #include<vector>
 #include<string>
 #include <map>
+#include <typeinfo>
+
 #include "./Component.h"
 #include "./Constants.h"
 
 
 class Component;
 class EntityManager;
+union SDL_Event;
 
 class Entity {
 private:
@@ -27,6 +30,7 @@ public:
     Entity(EntityManager& manager);
     Entity(EntityManager& manager, std::string name, LayerType layer, bool isActive);
     void Update(float deltaTime);
+    bool HandleEvent(SDL_Event &event);
     void Render();
     void Destroy();
     bool IsActive() const;

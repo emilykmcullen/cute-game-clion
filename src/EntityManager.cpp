@@ -48,6 +48,19 @@ void EntityManager::Update(float deltaTime){
 //    }
 //}
 
+void EntityManager::HandleEvent(SDL_Event &event){
+    for (int layerNumber = NUM_LAYERS - 1; layerNumber > 0; layerNumber --){
+        for (auto& entity: GetEntitiesByLayer(static_cast<LayerType>(layerNumber))){
+            if (entity->IsActive())
+            {
+                if (entity->HandleEvent(event)) {
+                    return;
+                }
+            }
+        }
+    }
+}
+
 void EntityManager::Render(){
     for (int layerNumber = 0; layerNumber < NUM_LAYERS; layerNumber ++){
         for (auto& entity: GetEntitiesByLayer(static_cast<LayerType>(layerNumber))){
