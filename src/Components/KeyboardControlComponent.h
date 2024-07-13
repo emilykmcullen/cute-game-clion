@@ -113,21 +113,26 @@ public:
 
     void SetMovement()
     {
+        int velocity = 250;
+        if (upKeyPressed && rightKeyPressed || rightKeyPressed && downKeyPressed || downKeyPressed && leftKeyPressed || leftKeyPressed && upKeyPressed)
+        {
+            velocity = 180;
+        }
         if (upKeyPressed)
         {
-            transform->velocity.y = -250;
+            transform->velocity.y = -velocity;
         }
         if (rightKeyPressed)
         {
-            transform->velocity.x = 250;
+            transform->velocity.x = velocity;
         }
         if (downKeyPressed)
         {
-            transform->velocity.y = 250;
+            transform->velocity.y = velocity;
         }
         if (leftKeyPressed)
         {
-            transform->velocity.x = -250;
+            transform->velocity.x = -velocity;
         }
 
         if (downKeyPressed && rightKeyPressed)
